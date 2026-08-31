@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IGCSE 0511 Reading Papers Dashboard</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --sage:#6f8f88;
+  --sage-dark:#55736d;
+  --sage-light:#e8f0ee;
+  --mist:#f6f8f7;
+  --ink:#2f3a38;
+  --ink-soft:#667472;
+  --line:#d7dfdc;
+  --card:#ffffff;
+  --blue:#6f8fae;
+  --blue-light:#ebf2f8;
+  --green:#5f8b6f;
+  --green-light:#edf5ef;
+  --gold:#b89b5e;
+  --gold-light:#fbf7ec;
+  --rose:#b97878;
+  --rose-light:#fbefef;
+  --shadow:0 2px 10px rgba(0,0,0,0.06);
+  --radius:12px;
+}
+html{font-size:15px;scroll-behavior:smooth}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+  background:var(--mist);color:var(--ink);line-height:1.6;min-height:100vh
+}
+.app-header{
+  background:linear-gradient(135deg,var(--sage) 0%,var(--sage-dark) 100%);
+  color:#fff;position:sticky;top:0;z-index:1000;box-shadow:0 3px 12px rgba(0,0,0,0.12)
+}
+.header-inner{
+  max-width:1320px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap
+}
+.header-brand{display:flex;align-items:center;gap:14px}
+.header-logo{
+  width:50px;height:50px;border-radius:10px;background:#fff;color:var(--sage-dark);display:flex;align-items:center;justify-content:center;
+  font-weight:900;font-size:20px;flex-shrink:0
+}
+.header-titles h1{font-size:1.24rem;font-weight:800}
+.header-titles .subtitle{font-size:0.8rem;opacity:0.92}
+.header-qual{
+  text-align:right;font-size:0.73rem;line-height:1.5;opacity:0.92;
+  border-left:2px solid rgba(255,255,255,0.28);padding-left:14px
+}
+.header-actions{display:flex;gap:8px;flex-wrap:wrap}
+.header-actions button{
+  background:rgba(255,255,255,0.16);color:#fff;border:1px solid rgba(255,255,255,0.28);
+  padding:7px 14px;border-radius:20px;cursor:pointer;font-size:0.8rem;font-weight:600
+}
+.header-actions button.active{background:#fff;color:var(--sage-dark)}
+
+.app-container{max-width:1320px;margin:0 auto;padding:20px 20px 80px}
+.tab-bar{
+  display:flex;gap:4px;overflow-x:auto;background:#fff;border-radius:var(--radius);padding:6px;box-shadow:var(--shadow);margin-bottom:18px
+}
+.tab-btn{
+  padding:10px 18px;border:none;background:transparent;border-radius:9px;color:var(--ink-soft);
+  font-size:0.86rem;font-weight:600;cursor:pointer;white-space:nowrap
+}
+.tab-btn.active{background:var(--sage);color:#fff}
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);margin-bottom:18px
+}
+.card-header{
+  font-size:1.06rem;font-weight:800;color:var(--sage-dark);padding-bottom:10px;border-bottom:2px solid #edf1f0;margin-bottom:14px
+}
+.panel{display:none}
+.panel.active{display:block}
+.form-row{margin-bottom:14px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:860px){.form-grid{grid-template-columns:1fr}}
+label{display:block;font-weight:700;margin-bottom:5px;font-size:0.85rem}
+input[type="text"],input[type="password"],textarea,select{
+  width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:9px;font:inherit;color:var(--ink);background:#fff
+}
+textarea{resize:vertical;min-height:88px}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--sage);box-shadow:0 0 0 3px rgba(111,143,136,0.12)}
+.btn{
+  border:none;border-radius:9px;padding:8px 16px;cursor:pointer;font:inherit;font-size:0.85rem;font-weight:700
+}
+.btn-primary{background:var(--sage);color:#fff}
+.btn-primary:hover{background:var(--sage-dark)}
+.btn-secondary{background:#edf1f0;color:var(--ink)}
+.btn-secondary:hover{background:#e2e8e6}
+.btn-danger{background:var(--rose);color:#fff}
+.btn-group{display:flex;gap:8px;flex-wrap:wrap}
+.badge{
+  display:inline-block;padding:4px 10px;border-radius:16px;font-size:0.74rem;font-weight:700;margin-right:6px
+}
+.badge-blue{background:var(--blue-light);color:var(--blue)}
+.badge-green{background:var(--green-light);color:var(--green)}
+.badge-gold{background:var(--gold-light);color:var(--gold)}
+.notice{
+  padding:12px 14px;border-radius:10px;border:1px solid var(--line);font-size:0.84rem
+}
+.notice-blue{background:var(--blue-light);border-color:#d3e0ed}
+.notice-green{background:var(--green-light);border-color:#d6e7da}
+.notice-gold{background:var(--gold-light);border-color:#efe0b5}
+.notice-rose{background:var(--rose-light);border-color:#e7c7c7}
+
+.layout{display:grid;grid-template-columns:310px 1fr;gap:18px}
+@media(max-width:1020px){.layout{grid-template-columns:1fr}}
+.sidebar-box{
+  border:1px solid var(--line);border-radius:10px;padding:14px;background:#fbfcfb;margin-bottom:14px
+}
+.stat-row{
+  display:flex;justify-content:space-between;gap:14px;padding:7px 0;border-bottom:1px solid #edf1f0;font-size:0.83rem
+}
+.stat-row:last-child{border-bottom:none}
+.passage-box{
+  background:#fffefb;border:1px solid #e8e3d7;border-radius:12px;padding:22px 24px;line-height:1.85;font-size:1rem
+}
+.passage-line{
+  display:flex;gap:10px;padding:4px 6px;border-radius:8px;cursor:pointer;transition:background 0.15s
+}
+.passage-line:hover{background:#f5f8f7}
+.line-no{
+  width:34px;flex-shrink:0;text-align:right;color:var(--ink-soft);font-size:0.76rem;padding-top:2px
+}
+.line-text{flex:1}
+.keyword-chip{
+  display:inline-flex;align-items:center;padding:5px 11px;border-radius:18px;border:1px solid var(--line);font-size:0.78rem;
+  background:#fff;margin:4px 6px 0 0;cursor:pointer;font-weight:600
+}
+.keyword-chip.active{background:var(--sage-light);border-color:#bdd0ca;color:var(--sage-dark)}
+.kw-highlight{background:#fff2b8;border-radius:4px;padding:0 2px}
+.exercise-nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.exercise-btn{
+  min-width:96px;padding:10px 14px;border-radius:10px;border:1px solid var(--line);background:#fff;cursor:pointer;font-weight:700
+}
+.exercise-btn.active{background:var(--sage);color:#fff;border-color:var(--sage)}
+.exercise-panel{display:none}
+.exercise-panel.active{display:block}
+.question-block{
+  border:1px solid var(--line);border-radius:10px;padding:16px;background:#fff;margin-bottom:12px
+}
+.q-title{font-weight:800;margin-bottom:8px}
+.q-meta{font-size:0.77rem;color:var(--ink-soft);margin-bottom:8px}
+.option{
+  display:flex;gap:10px;align-items:flex-start;border:1px solid #edf1f0;border-radius:9px;padding:9px 10px;margin-bottom:8px;cursor:pointer
+}
+.option:hover{background:#fafcfb}
+.option input{margin-top:4px}
+.short-input{min-height:46px}
+.match-grid,.note-grid{display:grid;grid-template-columns:1fr 160px;gap:8px;align-items:center}
+@media(max-width:760px){.match-grid,.note-grid{grid-template-columns:1fr}}
+.result-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+.stat-card{
+  background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px;text-align:center
+}
+.stat-value{font-size:1.8rem;font-weight:900;color:var(--sage-dark)}
+.stat-label{font-size:0.78rem;color:var(--ink-soft);margin-top:4px}
+.progress-bg{height:12px;background:#e8eeec;border-radius:8px;overflow:hidden}
+.progress-fill{height:100%;background:var(--sage);border-radius:8px;transition:width 0.3s}
+.review-item{
+  border:1px solid var(--line);border-radius:11px;padding:15px;background:#fff;margin-bottom:12px
+}
+.review-item.good{border-left:4px solid var(--green)}
+.review-item.bad{border-left:4px solid var(--rose)}
+.answer-box{
+  background:#fafcfb;border:1px solid #edf1f0;border-radius:9px;padding:10px 12px;margin-top:8px
+}
+.checklist{list-style:none}
+.checklist li{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid #edf1f0;font-size:0.85rem}
+.checklist li:last-child{border-bottom:none}
+.check-icon{width:20px;flex-shrink:0;text-align:center;font-weight:900}
+.ok{color:var(--green)} .warn{color:var(--gold)} .bad{color:var(--rose)}
+.comment-bank{display:flex;gap:6px;flex-wrap:wrap}
+.comment-btn{
+  background:#f2f6f5;border:1px solid #dce7e3;border-radius:16px;padding:5px 12px;cursor:pointer;font-size:0.76rem
+}
+.modal-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,0.44);z-index:2000;align-items:center;justify-content:center
+}
+.modal-overlay.show{display:flex}
+.modal{
+  background:#fff;border-radius:14px;padding:26px;max-width:420px;width:90%;box-shadow:0 8px 34px rgba(0,0,0,0.18)
+}
+.app-footer{
+  text-align:center;padding:18px;font-size:0.73rem;color:var(--ink-soft);border-top:1px solid var(--line);margin-top:36px
+}
+@media(max-width:600px){
+  .header-inner{padding:10px 14px}
+  .header-qual{display:none}
+  .app-container{padding:12px 10px 60px}
+  .card{padding:16px}
+}
+
+/* ==========================================================
+   CROSS-DEVICE / GITHUB PAGES SAFETY PATCH
+   Keeps the existing design and behaviour intact.
+   ========================================================== */
+html{
+  -webkit-text-size-adjust:100%;
+  text-size-adjust:100%;
+}
+button,input,textarea,select{
+  font-family:inherit;
+}
+@media (hover:none), (pointer:coarse){
+  button,.btn,.tab-btn,.exercise-btn,.keyword-chip,.comment-btn,.option{
+    min-height:44px;
+    touch-action:manipulation;
+    -webkit-tap-highlight-color:rgba(111,143,136,.16);
+  }
+  input[type="text"],input[type="password"],textarea,select{
+    font-size:16px;
+    min-height:44px;
+  }
+  .tab-bar{
+    -webkit-overflow-scrolling:touch;
+  }
+}
+@media (max-width:900px){
+  .header-inner{align-items:flex-start}
+  .header-qual{display:none}
+  .layout{grid-template-columns:1fr}
+}
+@media (max-width:600px){
+  .header-actions{width:100%}
+  .header-actions button{flex:1 1 auto}
+  .tab-btn{padding:10px 14px}
+  .passage-box{padding:16px 14px}
+}
+
+</style>
+</head>
+<body>
+
+<noscript>
+  <div style="margin:14px;padding:14px;border:2px solid #b97878;border-radius:12px;background:#fbefef;color:#2f3a38;font:600 15px -apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;line-height:1.5">
+    This interactive reading app needs JavaScript. If the page looks normal but the buttons do nothing,
+    open the GitHub Pages web link in Safari, Chrome, Edge or Firefox rather than previewing the HTML file
+    inside Files, Teams, OneDrive or another attachment viewer.
+  </div>
+</noscript>
+
+
+<header class="app-header">
+  <div class="header-inner">
+    <div class="header-brand">
+      <div class="header-logo">0511</div>
+      <div class="header-titles">
+        <h1>Reading Papers Dashboard</h1>
+        <div class="subtitle">IGCSE English as a Second Language — three full reading-only practice papers</div>
+      </div>
+    </div>
+    <div class="header-qual">
+      Paper 1 practice<br>Exercises 1–4 only<br>Classroom training tool
+    </div>
+    <div class="header-actions">
+      <button id="btnStudentMode" class="active" onclick="setMode('student')">Student Mode</button>
+      <button id="btnTeacherMode" onclick="requestTeacherMode()">Teacher Mode</button>
+    </div>
+  </div>
+</header>
+
+<div class="app-container">
+  <div class="tab-bar">
+    <button class="tab-btn active" data-tab="overview" onclick="switchTab('overview')">Overview</button>
+    <button class="tab-btn" data-tab="paper" onclick="switchTab('paper')">Paper Practice</button>
+    <button class="tab-btn" data-tab="results" onclick="switchTab('results')">Results</button>
+    <button class="tab-btn" data-tab="review" onclick="switchTab('review')">Review</button>
+    <button class="tab-btn" data-tab="teacher" onclick="switchTab('teacher')" id="tabTeacher" style="display:none">Teacher</button>
+  </div>
+
+  <section class="panel active" id="panel-overview">
+    <div class="card">
+      <div class="card-header">Overview</div>
+      <div class="notice notice-blue" id="paperOverview"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">Choose a paper</div>
+      <div class="form-row">
+        <label>Practice paper</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <select id="paperSelect" style="flex:1;min-width:260px"></select>
+          <button class="btn btn-primary" onclick="loadSelectedPaper()">Load paper</button>
+        </div>
+      </div>
+      <div class="notice notice-green">
+        Each paper includes the four reading exercises: short answers, multiple matching, note completion, and multiple choice.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">What changed in this version</div>
+      <ul class="checklist">
+        <li><span class="check-icon ok">✓</span><span>Three complete reading-only practice papers are built in.</span></li>
+        <li><span class="check-icon ok">✓</span><span>Keyword chips can now be clicked to highlight matching words in the text.</span></li>
+        <li><span class="check-icon ok">✓</span><span>The colour scheme has been changed to a softer sage / blue-grey palette.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-paper">
+    <div class="card">
+      <div class="card-header">Paper Practice</div>
+      <div class="layout">
+        <div>
+          <div class="sidebar-box">
+            <div style="font-weight:800;color:var(--sage-dark);margin-bottom:8px">Paper controls</div>
+            <div class="btn-group" style="margin-bottom:10px">
+              <button class="btn btn-secondary" onclick="changeFont(-1)">A-</button>
+              <button class="btn btn-secondary" onclick="changeFont(1)">A+</button>
+              <button class="btn btn-secondary" onclick="toggleLineNumbers()">Line numbers</button>
+              <button class="btn btn-secondary" onclick="clearKeywordHighlights()">Clear highlights</button>
+              <button class="btn btn-danger" onclick="clearCurrentPaperAnswers()">Clear all answers</button>
+            </div>
+            <div style="font-size:0.82rem;color:var(--ink-soft);margin-bottom:6px">Click a keyword to highlight it in the text.</div>
+            <div id="keywordChips"></div>
+          </div>
+
+          <div class="sidebar-box">
+            <div style="font-weight:800;color:var(--sage-dark);margin-bottom:8px">Current paper</div>
+            <div id="currentPaperMini"></div>
+          </div>
+
+          <div class="sidebar-box">
+            <div style="font-weight:800;color:var(--sage-dark);margin-bottom:8px">Exercise information</div>
+            <div id="exerciseMini"></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="exercise-nav" id="exerciseNav"></div>
+          <div id="exercisePanels"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-results">
+    <div class="card">
+      <div class="card-header">Results</div>
+      <div class="result-grid">
+        <div class="stat-card"><div class="stat-value" id="scoreAnswered">0</div><div class="stat-label">Answered</div></div>
+        <div class="stat-card"><div class="stat-value" id="scoreCorrect">0</div><div class="stat-label">Correct</div></div>
+        <div class="stat-card"><div class="stat-value" id="scorePercent">0%</div><div class="stat-label">Accuracy</div></div>
+        <div class="stat-card"><div class="stat-value" id="scorePaper">1</div><div class="stat-label">Current paper</div></div>
+      </div>
+
+      <div class="form-row" style="margin-top:16px">
+        <label>Overall completion</label>
+        <div class="progress-bg"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+      </div>
+
+      <div class="form-grid">
+        <div class="card" style="margin-bottom:0">
+          <div class="card-header">Strengths</div>
+          <ul class="checklist" id="strengthList"></ul>
+        </div>
+        <div class="card" style="margin-bottom:0">
+          <div class="card-header">Targets</div>
+          <ul class="checklist" id="targetList"></ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-review">
+    <div class="card">
+      <div class="card-header">Answer Review</div>
+      <div class="notice notice-gold" style="margin-bottom:12px">Suggested answers are hidden by default in student view.</div>
+      <div class="btn-group" style="margin-bottom:12px">
+        <button class="btn btn-secondary" id="revealAnswersBtn" onclick="toggleReviewAnswers()">Reveal / hide suggested answers</button>
+      </div>
+      <div id="reviewRevealNotice" class="notice notice-blue" style="margin-bottom:12px;display:none"></div>
+      <div id="reviewContainer"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-teacher">
+    <div class="card">
+      <div class="card-header">Teacher Notes</div>
+      <div class="comment-bank" id="commentBank"></div>
+      <div class="form-row" style="margin-top:12px">
+        <label>Notes</label>
+        <textarea id="teacherNotes" rows="5" oninput="saveTeacherNotes()"></textarea>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-secondary" onclick="copyTeacherNotes()">Copy notes</button>
+        <button class="btn btn-danger" onclick="resetAll()">Reset all answers</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<footer class="app-footer">
+  IGCSE 0511 Reading Papers Dashboard • Reading-only classroom practice tool • Not an official Cambridge product
+</footer>
+
+<div class="modal-overlay" id="modalPassword">
+  <div class="modal">
+    <h3 style="color:var(--sage-dark);margin-bottom:12px">Teacher Mode</h3>
+    <p style="font-size:0.85rem;margin-bottom:12px">Enter the Teacher Mode password to continue.</p>
+    <div class="form-row">
+      <input type="password" id="teacherPwd" placeholder="Password" onkeydown="if(event.key==='Enter')checkTeacherPassword()">
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-primary" onclick="checkTeacherPassword()">Unlock</button>
+      <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+    </div>
+    <div id="pwdError" style="margin-top:8px;color:var(--rose);font-size:0.82rem;display:none">Incorrect password.</div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = 'igcse0511readingpapersv2';
+const TEACHER_PWD = 'NKCS1234';
+let currentTab = 'overview';
+let currentExercise = 0;
+let currentFontSize = 1;
+let showLineNumbers = true;
+let activeKeywords = [];
+let isTeacherMode = false;
+
+const PAPERS = [
+{
+  id:'paper1',
+  title:'Practice Paper 1 — Community Projects',
+  overview:'This paper practises the four reading exercises through texts about local projects, volunteering, and change in communities.',
+  comments:[
+    'Good scanning for detail.',
+    'Nice matching of ideas across sections.',
+    'Check whether the question needs one answer or more than one.',
+    'Watch the exact wording in the multiple-choice options.',
+    'You are improving at paraphrase recognition.'
+  ],
+  exercises:[
+    {
+      title:'Exercise 1',
+      marks:8,
+      type:'short_answers',
+      skill:'short answers',
+      instructions:'Read the text and answer the questions. Questions 1–5 need one answer. Question 6 needs three answers.',
+      keywords:['residents','garden','volunteers','teenagers','challenges'],
+      passage:[
+        "An empty piece of land behind Westfield Library was transformed into a community garden last year. Before the project began, many local residents believed it would fail because the area had been neglected for years and was covered with rubbish and broken fencing. Some people also complained that previous attempts to improve the space had not lasted very long, so they were doubtful this plan would succeed either.",
+        "A small group of volunteers refused to give up. They met every Saturday morning to clean the land, repair the fence and plant vegetables. Their effort slowly attracted attention, and soon neighbours began donating seeds, gloves and basic tools. As the weeks passed, the garden started to look more organised, which encouraged even more people to offer practical help.",
+        "One surprising change involved younger people. Teenagers who had previously ignored the space started visiting after school. Some said they enjoyed learning practical skills, while others appreciated the chance to relax outdoors with friends instead of staying inside all afternoon. Teachers at a nearby school even noticed that a few students had become more interested in environmental issues because of the project.",
+        "The project also improved relationships in the neighbourhood. People who had never spoken before started sharing advice, chatting after work sessions and making plans for future events. In this way, the garden became more than just a place where food was grown. It turned into a meeting point where residents could exchange ideas and feel more connected to the area.",
+        "Although the project has been successful, there are still difficulties. Watering the plants in summer takes time, and some volunteers cannot attend regularly because of work. Even so, the organisers hope to add benches next spring so families can spend longer there. They are also considering a noticeboard so visitors can learn what is being grown and when community events will take place."
+      ],
+      questions:[
+        {id:'p1e1q1', prompt:'Where was the empty piece of land?', kind:'single', answers:['behind westfield library'], explanation:'The first paragraph states that the land was behind Westfield Library.'},
+        {id:'p1e1q2', prompt:'What did many residents think about the project at first?', kind:'single', answers:['it would fail','the plan would fail'], explanation:'The text says many local residents believed it would fail.'},
+        {id:'p1e1q3', prompt:'When did the volunteers meet?', kind:'single', answers:['every saturday morning'], explanation:'The volunteers met every Saturday morning.'},
+        {id:'p1e1q4', prompt:'Who started visiting the space after school?', kind:'single', answers:['teenagers','younger people'], explanation:'Paragraph 3 says teenagers started joining after school.'},
+        {id:'p1e1q5', prompt:'What do the organisers hope to add next spring?', kind:'single', answers:['benches','a bench','seating','benches for families'], explanation:'The final paragraph says they hope to add benches.'},
+        {id:'p1e1q6', prompt:'Give three things volunteers or neighbours provided to support the project.', kind:'triple', answers:['seeds','gloves','tools','basic tools'], explanation:'Paragraph 2 names seeds, gloves and basic tools.'}
+      ]
+    },
+    {
+      title:'Exercise 2',
+      marks:9,
+      type:'matching',
+      skill:'multiple matching',
+      instructions:'Read the four short texts about weekend activities. For each statement, choose the correct person: A, B, C or D.',
+      keywords:['music','repair','animals','exercise'],
+      sections:[
+        {label:'A', title:'Hana', text:'I spend Saturdays helping at an animal rescue centre. It is tiring work because the dogs need exercise and cleaning, but I love seeing shy animals become more confident. I began volunteering there after my cousin adopted a puppy from the centre. At first I was nervous around some of the larger dogs, but the staff showed me what to do, and now I feel much more capable.'},
+        {label:'B', title:'Luis', text:'My favourite weekend activity is repairing old bicycles with my grandfather. We usually sell the finished bikes cheaply to families in the area. I like practical work, and I also enjoy hearing stories about how different the town was when he was young. Sometimes we even keep one of the better bikes for a few days so I can test it properly before anyone buys it.'},
+        {label:'C', title:'Mei', text:'On Sundays I meet some friends in the park to play music together. None of us is professional, but we practise seriously and sometimes perform at local events. I used to feel nervous in front of other people, so this hobby has made me much braver. The best part is that every rehearsal feels slightly different because we are always trying new songs or changing the arrangement.'},
+        {label:'D', title:'Omar', text:'Most weekends, I go running early in the morning and then help my parents at their market stall. Running gives me energy for the day, and I like the quiet streets before the town gets busy. It also helps me clear my mind before school starts again. By the time I reach the market, I already feel focused, which makes it easier to deal with customers politely even when it gets crowded.'}
+      ],
+      questions:[
+        {id:'p1e2q1', prompt:'Who enjoys helping creatures that were frightened before?', answer:'A', explanation:'Hana says she loves seeing shy animals become more confident.'},
+        {id:'p1e2q2', prompt:'Who does an activity that also benefits local families financially?', answer:'B', explanation:'Luis sells repaired bikes cheaply to families in the area.'},
+        {id:'p1e2q3', prompt:'Who became more confident because of the activity?', answer:'C', explanation:'Mei says the hobby has made her much braver.'},
+        {id:'p1e2q4', prompt:'Who values a peaceful time of day?', answer:'D', explanation:'Omar likes the quiet streets before the town gets busy.'},
+        {id:'p1e2q5', prompt:'Who was inspired by a family member to begin?', answer:'A', explanation:'Hana started after her cousin adopted a puppy.'},
+        {id:'p1e2q6', prompt:'Who works with an older relative?', answer:'B', explanation:'Luis repairs bicycles with his grandfather.'},
+        {id:'p1e2q7', prompt:'Who sometimes entertains other people?', answer:'C', explanation:'Mei and friends sometimes perform at local events.'},
+        {id:'p1e2q8', prompt:'Who combines exercise with another responsibility?', answer:'D', explanation:'Omar goes running and then helps at the market stall.'},
+        {id:'p1e2q9', prompt:'Who enjoys both physical work and conversation?', answer:'B', explanation:'Luis likes practical work and hearing his grandfather’s stories.'}
+      ]
+    },
+    {
+      title:'Exercise 3',
+      marks:7,
+      type:'notes',
+      skill:'note completion',
+      instructions:'Read the text and complete the notes.',
+      keywords:['festival','lanterns','food','volunteers'],
+      passage:[
+        "The Riverside Lantern Festival began as a small event organised by a youth club, but it now attracts visitors from nearby towns as well. It takes place every autumn near the river, where colourful lanterns are hung from trees and bridges. What was once a simple evening gathering has gradually become one of the most popular community events of the season.",
+        "Families often arrive early to watch craft demonstrations or take part in short workshops. Children can make simple paper lanterns, while older visitors sometimes learn basic photography so they can capture the evening lights more effectively. Teachers from local schools occasionally recommend the workshops because they combine creativity with practical skills.",
+        "Food is an important part of the festival. Local cooks sell dishes from different countries, and volunteers run a stall offering hot drinks when the weather turns cold. Musicians perform on a small stage throughout the evening, which creates a cheerful atmosphere. Many visitors say this mixture of food, music and light makes the event feel especially welcoming.",
+        "The organisers say the most difficult part is preparation. Volunteers begin planning in summer, checking safety rules, contacting performers and advertising the event online. Even though this work is demanding, they believe the festival brings the community together in a memorable way. They also hope it encourages younger residents to take a more active part in local traditions."
+      ],
+      notesTask:'You are going to give a short talk about the Riverside Lantern Festival to your class. Prepare some notes to use as the basis for your talk.',
+      notesInstruction:'Make short notes under each heading.',
+      noteSections:[
+        {
+          number:'10',
+          heading:'Activities and attractions at the festival',
+          marks:4,
+          bullets:[
+            {id:'p1e3q1', prompt:'watch craft', answers:['demonstrations','craft demonstrations'], explanation:'Families can watch craft demonstrations.'},
+            {id:'p1e3q2', prompt:'children make paper', answers:['lanterns'], explanation:'Children can make simple paper lanterns.'},
+            {id:'p1e3q3', prompt:'older visitors learn basic', answers:['photography'], explanation:'Older visitors may learn basic photography.'},
+            {id:'p1e3q4', prompt:'listen to', answers:['musicians','music'], explanation:'Musicians perform throughout the evening.'}
+          ]
+        },
+        {
+          number:'11',
+          heading:'What organisers do to prepare the event',
+          marks:3,
+          bullets:[
+            {id:'p1e3q5', prompt:'check safety', answers:['rules'], explanation:'Volunteers check safety rules.'},
+            {id:'p1e3q6', prompt:'contact', answers:['performers'], explanation:'They contact performers.'},
+            {id:'p1e3q7', prompt:'advertise the event', answers:['online'], explanation:'They advertise the event online.'}
+          ]
+        }
+      ]
+    },
+    {
+      title:'Exercise 4',
+      marks:6,
+      type:'mcq',
+      skill:'multiple choice',
+      instructions:'Read the text and choose the correct option A, B or C for each question.',
+      keywords:['museum','visitors','guide','future'],
+      passage:[
+        "A small transport museum in Hillford has become unexpectedly popular since it reopened after renovation. In the past, the museum had a quiet reputation and was mainly visited by school groups, but recent changes have attracted a wider audience. Local newspapers have even started recommending it as one of the town’s most interesting places to visit.",
+        "One reason for this success is the new interactive displays. Instead of simply reading signs, visitors can now listen to recordings, watch short films and try digital activities that explain how old vehicles were designed and used. These features are especially popular with younger visitors, who often spend much longer in the galleries than they did before.",
+        "The museum has also trained volunteer guides to speak more informally with guests. Rather than memorising long speeches, they are encouraged to ask visitors questions and adapt their explanations to different age groups. This has made tours feel more personal. Some visitors say they now feel comfortable asking questions they might once have kept to themselves.",
+        "Even so, the director says the museum is still learning. Some older visitors miss the quieter style of the past, and the building can feel crowded during holidays. The team plans to improve online booking next year so entry is more organised. They are also considering adding quieter visiting hours for people who prefer a calmer experience."
+      ],
+      questions:[
+        {id:'p1e4q1', prompt:'Why is the museum more popular now?', options:['It is free to enter.','It has changed after renovation.','It moved to a bigger building.'], answer:'It has changed after renovation.', explanation:'The text says recent changes after renovation attracted a wider audience.'},
+        {id:'p1e4q2', prompt:'What is special about the new displays?', options:['They are easier to clean.','They include interactive features.','They were designed by students.'], answer:'They include interactive features.', explanation:'Visitors can listen, watch and try digital activities.'},
+        {id:'p1e4q3', prompt:'How do guides now speak to visitors?', options:['In a more flexible and personal way.','By reading a fixed script.','Only in formal language.'], answer:'In a more flexible and personal way.', explanation:'Guides ask questions and adapt explanations.'},
+        {id:'p1e4q4', prompt:'What problem still exists?', options:['The museum has no volunteers.','School groups are no longer allowed.','It can feel crowded during holidays.'], answer:'It can feel crowded during holidays.', explanation:'The director mentions holiday crowds.'},
+        {id:'p1e4q5', prompt:'What is planned for next year?', options:['Improved online booking.','A new transport route.','A second museum building.'], answer:'Improved online booking.', explanation:'The team plans to improve online booking next year.'},
+        {id:'p1e4q6', prompt:'Which sentence best describes the director’s attitude?', options:['The museum is perfect now.','The museum has improved but still needs work.','The changes were a mistake.'], answer:'The museum has improved but still needs work.', explanation:'The director recognises success but also says the museum is still learning.'}
+      ]
+    }
+  ]
+},
+{
+  id:'paper2',
+  title:'Practice Paper 2 — Learning and Leisure',
+  overview:'This paper focuses on school clubs, part-time interests, and public events. It gives students another full set of reading tasks in the same paper structure.',
+  comments:[
+    'Careful reading is helping.',
+    'Good work finding the right section.',
+    'Try not to choose an option just because it repeats a word from the text.',
+    'Your note completion is getting stronger.',
+    'Keep checking for implied meaning.'
+  ],
+  exercises:[
+    {
+      title:'Exercise 1',
+      marks:8,
+      type:'short_answers',
+      skill:'short answers',
+      instructions:'Read the text and answer the questions. Questions 1–5 need one answer. Question 6 needs three answers.',
+      keywords:['club','robotics','students','competition'],
+      passage:[
+        "Greenview School started an after-school robotics club two years ago after several students asked for more hands-on science activities. At first, the club met in an ordinary classroom because the school had very little equipment or space available. Even with these limitations, the first members were enthusiastic enough to stay after school each week and experiment with simple ideas.",
+        "The science department gradually collected donated materials, including old electronic parts, batteries and tools. A local engineer also visited once a month to give advice, which helped members solve technical problems more efficiently. Staff members said this outside support made the club feel much more serious and gave students confidence in their work.",
+        "Club members quickly became enthusiastic. Some enjoyed building simple machines, while others preferred testing computer instructions and improving designs. Because everyone had slightly different strengths, students often worked in pairs and learned from one another. This cooperative approach meant beginners were usually able to make progress quite quickly.",
+        "Last spring, the club entered a regional competition for the first time. Although the team did not win, they were proud that their robot completed every stage of the course. Teachers said the experience had increased students’ confidence and patience. Several students later said that simply taking part had motivated them to keep improving their designs.",
+        "The club now hopes to invite younger students to try short workshop sessions next term. The organisers believe this will encourage more learners to consider science subjects in the future. They also hope it will help older members develop leadership skills by explaining tasks to newcomers."
+      ],
+      questions:[
+        {id:'p2e1q1', prompt:'Why did the school start the robotics club?', kind:'single', answers:['students asked for more hands-on science activities','students asked for more science activities','students asked for it'], explanation:'The first sentence explains that students requested more hands-on science activities.'},
+        {id:'p2e1q2', prompt:'Where did the club meet at first?', kind:'single', answers:['in an ordinary classroom','ordinary classroom','a classroom'], explanation:'It first met in an ordinary classroom.'},
+        {id:'p2e1q3', prompt:'Who visited once a month to help?', kind:'single', answers:['a local engineer','local engineer'], explanation:'A local engineer visited monthly.'},
+        {id:'p2e1q4', prompt:'How did students often work?', kind:'single', answers:['in pairs','pairs'], explanation:'Students often worked in pairs.'},
+        {id:'p2e1q5', prompt:'Who do organisers want to invite next term?', kind:'single', answers:['younger students','younger learners'], explanation:'They hope to invite younger students.'},
+        {id:'p2e1q6', prompt:'Give three things the science department collected.', kind:'triple', answers:['old electronic parts','electronic parts','batteries','tools'], explanation:'Paragraph 2 lists old electronic parts, batteries and tools.'}
+      ]
+    },
+    {
+      title:'Exercise 2',
+      marks:9,
+      type:'matching',
+      skill:'multiple matching',
+      instructions:'Read the four texts about personal interests. For each statement, choose the correct person: A, B, C or D.',
+      keywords:['cooking','writing','photography','swimming'],
+      sections:[
+        {label:'A', title:'Nadia', text:'I began writing short stories when I was recovering from an injury and had to stay at home for several weeks. At first, I wrote just to pass time, but now I send my work to a school magazine and hope to study literature one day. Looking back, I am surprised that something I started in a difficult period has turned into the activity I care most about.'},
+        {label:'B', title:'Kai', text:'My uncle taught me the basics of cooking, and since then I have loved experimenting in the kitchen. I especially enjoy making meals for family celebrations because people are always honest about what tastes good and what needs improving. Even when a dish does not work perfectly, I usually learn something useful for the next time.'},
+        {label:'C', title:'Eleni', text:'Photography became important to me when I moved to a new city. Carrying a camera encouraged me to explore unfamiliar streets, parks and markets. I still like taking portraits most, because faces often tell a more interesting story than buildings do. The hobby has made me pay attention to details that I would probably have ignored before.'},
+        {label:'D', title:'Rashid', text:'I train with a swimming club three times a week. The sessions are demanding, especially in winter, but I like having a clear routine and trying to improve my times. Competitions make me nervous, though, so I am still learning how to stay calm. My coach says that once I control that side of things, my results will probably improve quite a lot.'}
+      ],
+      questions:[
+        {id:'p2e2q1', prompt:'Who started because of an unexpected change in life?', answer:'A', explanation:'Nadia began during recovery from an injury.'},
+        {id:'p2e2q2', prompt:'Who learnt from a relative?', answer:'B', explanation:'Kai’s uncle taught him cooking.'},
+        {id:'p2e2q3', prompt:'Who uses the hobby to understand a place better?', answer:'C', explanation:'Photography helped Eleni explore a new city.'},
+        {id:'p2e2q4', prompt:'Who follows a strict schedule?', answer:'D', explanation:'Rashid trains three times a week and likes the routine.'},
+        {id:'p2e2q5', prompt:'Who shares work with a wider audience?', answer:'A', explanation:'Nadia sends work to a school magazine.'},
+        {id:'p2e2q6', prompt:'Who welcomes direct opinions?', answer:'B', explanation:'Kai says people are honest about his food.'},
+        {id:'p2e2q7', prompt:'Who is especially interested in people rather than places?', answer:'C', explanation:'Eleni prefers portraits because faces tell stories.'},
+        {id:'p2e2q8', prompt:'Who is still developing confidence under pressure?', answer:'D', explanation:'Rashid gets nervous in competitions.'},
+        {id:'p2e2q9', prompt:'Who turned a temporary activity into a long-term ambition?', answer:'A', explanation:'Nadia started writing to pass time, but now hopes to study literature.'}
+      ]
+    },
+    {
+      title:'Exercise 3',
+      marks:7,
+      type:'notes',
+      skill:'note completion',
+      instructions:'Read the text and complete the notes.',
+      keywords:['cinema','tickets','screen','weather'],
+      passage:[
+        "The Oak Street Open-Air Cinema was created by a group of film enthusiasts who wanted to offer a different summer experience in their town. Instead of using a traditional building, they show films in a public garden every Friday evening during July and August. Their aim was to make film-going feel more relaxed and social than a typical cinema visit.",
+        "Visitors are advised to arrive early because seats are limited. Some people bring blankets or foldable chairs, while others buy simple picnic meals from nearby stalls before the screening begins. Families often say this relaxed atmosphere is one of the main attractions. Many visitors also enjoy being able to talk quietly and enjoy the evening air before the film starts.",
+        "The organisers use a large inflatable screen and modern speakers so that the audience can still see and hear clearly outdoors. If rain is expected, updates are posted online by midday so ticket holders know whether the event will continue. This system has helped visitors feel more confident about making plans in advance.",
+        "Running the cinema involves more than showing films. Staff must test equipment, welcome guests and clean the area afterwards. Although this takes time, the team says it is worth it because the events bring together people of different ages. Local businesses have also noticed that cinema nights bring more people into the area."
+      ],
+      notesTask:'You are going to give a short presentation about the Oak Street Open-Air Cinema. Prepare some notes to use as the basis for your presentation.',
+      notesInstruction:'Make short notes under each heading.',
+      noteSections:[
+        {
+          number:'10',
+          heading:'What visitors should know before the film starts',
+          marks:4,
+          bullets:[
+            {id:'p2e3q1', prompt:'arrive because seats are', answers:['limited'], explanation:'Visitors are advised to arrive early because seats are limited.'},
+            {id:'p2e3q2', prompt:'bring blankets or foldable', answers:['chairs'], explanation:'Some people bring blankets or foldable chairs.'},
+            {id:'p2e3q3', prompt:'buy simple picnic', answers:['meals','meal'], explanation:'Some visitors buy simple picnic meals.'},
+            {id:'p2e3q4', prompt:'check online updates if rain is', answers:['expected','rain is expected','rain'], explanation:'Updates are posted online if rain is expected.'}
+          ]
+        },
+        {
+          number:'11',
+          heading:'How the cinema is organised and run',
+          marks:3,
+          bullets:[
+            {id:'p2e3q5', prompt:'uses inflatable', answers:['screen'], explanation:'The organisers use a large inflatable screen.'},
+            {id:'p2e3q6', prompt:'staff welcome', answers:['guests'], explanation:'Staff welcome guests.'},
+            {id:'p2e3q7', prompt:'staff clean the', answers:['area'], explanation:'Staff clean the area afterwards.'}
+          ]
+        }
+      ]
+    },
+    {
+      title:'Exercise 4',
+      marks:6,
+      type:'mcq',
+      skill:'multiple choice',
+      instructions:'Read the text and choose the correct option A, B or C for each question.',
+      keywords:['bookshop','customers','events','owner'],
+      passage:[
+        "When Farrow’s Bookshop opened thirty years ago, it mainly sold school textbooks and newspapers. Today, however, it is known for offering reading events, author visits and themed displays that attract customers from outside the town. What was once a very practical shop has become a place people visit for enjoyment as well as shopping.",
+        "The owner believes this change was necessary because fewer people now buy books in exactly the same way as before. Instead of competing only on price, the shop tries to offer a personal experience that online retailers cannot easily copy. According to the owner, people still value expert advice and the feeling of being recognised when they return.",
+        "Staff members play an important part in this approach. They are encouraged to recommend titles based on customers’ interests and to organise activities for children during holidays. Regular visitors say this makes the shop feel welcoming rather than commercial. Parents especially appreciate having a space where children can discover books in a relaxed environment.",
+        "Even with these strengths, the business still faces pressure from rising costs. The owner says careful planning will be essential over the next few years, but remains hopeful because local support for the shop has stayed strong. Community loyalty, in the owner’s view, gives the business a better chance of adapting successfully."
+      ],
+      questions:[
+        {id:'p2e4q1', prompt:'What is different about the shop now?', options:['It only sells textbooks.','It offers more events and experiences.','It has moved online completely.'], answer:'It offers more events and experiences.', explanation:'The shop is now known for events, author visits and displays.'},
+        {id:'p2e4q2', prompt:'Why did the owner change the business approach?', options:['Customers requested fewer books.','The town became smaller.','Buying habits had changed.'], answer:'Buying habits had changed.', explanation:'The owner says fewer people buy books in the same way as before.'},
+        {id:'p2e4q3', prompt:'What do staff do?', options:['They only work with school groups.','They help create a personal experience.','They focus on lowering prices.'], answer:'They help create a personal experience.', explanation:'Staff recommend titles and organise activities.'},
+        {id:'p2e4q4', prompt:'How do regular visitors describe the shop?', options:['Welcoming.','Old-fashioned.','Disorganised.'], answer:'Welcoming.', explanation:'Visitors say it feels welcoming rather than commercial.'},
+        {id:'p2e4q5', prompt:'What challenge is mentioned?', options:['Poor staff training.','Rising costs.','Lack of books.'], answer:'Rising costs.', explanation:'The business faces pressure from rising costs.'},
+        {id:'p2e4q6', prompt:'What is the owner’s attitude at the end?', options:['Careful but hopeful.','Angry and disappointed.','Ready to close the shop.'], answer:'Careful but hopeful.', explanation:'The owner stresses planning but remains hopeful.'}
+      ]
+    }
+  ]
+},
+{
+  id:'paper3',
+  title:'Practice Paper 3 — Events and Experiences',
+  overview:'This paper gives students a third full reading practice set with texts about travel, performance, and local organisation.',
+  comments:[
+    'You are handling the structure well.',
+    'Nice work separating details from opinions.',
+    'Keep an eye on exact key words in the note completion.',
+    'Try using the text, not your background knowledge.',
+    'You are getting better at choosing evidence.'
+  ],
+  exercises:[
+    {
+      title:'Exercise 1',
+      marks:8,
+      type:'short_answers',
+      skill:'short answers',
+      instructions:'Read the text and answer the questions. Questions 1–5 need one answer. Question 6 needs three answers.',
+      keywords:['tour','visitors','guide','market','history'],
+      passage:[
+        "Each summer, the Old Harbour Walking Tour introduces visitors to one of the oldest parts of the city. The tour was first designed for tourists, but it has become popular with local people too, especially those who want to learn more about the area’s history. Some local families now join more than once because they enjoy hearing the stories in a different way each year.",
+        "The walk begins near the clock tower, where the guide explains how the harbour used to be the centre of trade many years ago. Participants then move through narrow streets, stopping at former warehouses, a restored market and a small museum. The route is not especially long, but it includes enough variety to keep visitors interested throughout.",
+        "What makes the tour unusual is the guide’s storytelling style. Instead of giving long lists of dates, she shares short personal stories collected from residents whose families worked near the water. This helps visitors imagine what daily life was like. Many people say these personal details stay in their minds longer than factual information alone.",
+        "At the end of the tour, many people stay in the area for lunch or take photographs. Local café owners say the walking tour has helped bring more business to the neighbourhood. Because of its success, the organisers may add an evening version next year. They think the harbour’s atmosphere after sunset could make the experience even more memorable."
+      ],
+      questions:[
+        {id:'p3e1q1', prompt:'When does the walking tour take place?', kind:'single', answers:['each summer','summer'], explanation:'The tour takes place each summer.'},
+        {id:'p3e1q2', prompt:'Where does the walk begin?', kind:'single', answers:['near the clock tower','the clock tower'], explanation:'The walk begins near the clock tower.'},
+        {id:'p3e1q3', prompt:'What kind of building has been restored?', kind:'single', answers:['market','a restored market'], explanation:'Participants stop at a restored market.'},
+        {id:'p3e1q4', prompt:'Whose stories does the guide share?', kind:'single', answers:['residents','local residents','families who worked near the water'], explanation:'She shares personal stories collected from residents.'},
+        {id:'p3e1q5', prompt:'What might be added next year?', kind:'single', answers:['an evening version','evening version'], explanation:'The organisers may add an evening version.'},
+        {id:'p3e1q6', prompt:'Give three places participants stop or spend time in the area.', kind:'triple', answers:['former warehouses','warehouses','restored market','market','small museum','café','cafes'], explanation:'The text mentions former warehouses, a restored market and a small museum; later, people stay for lunch in the area too.'}
+      ]
+    },
+    {
+      title:'Exercise 2',
+      marks:9,
+      type:'matching',
+      skill:'multiple matching',
+      instructions:'Read the four texts about school experiences. For each statement, choose the correct person: A, B, C or D.',
+      keywords:['drama','debate','science','new school'],
+      sections:[
+        {label:'A', title:'Sofia', text:'Joining the school drama group helped me after I moved here from another country. Rehearsals gave me a reason to speak to people, and learning lines improved my confidence in English more quickly than I expected. It also meant I stopped feeling like a stranger quite so quickly, because everyone had to work together closely.'},
+        {label:'B', title:'Arun', text:'I chose the debate club because I enjoy defending ideas and hearing strong arguments from others. At first, I thought winning was the most important thing, but now I value the preparation stage even more. Researching a topic carefully often teaches me more than the actual debate itself.'},
+        {label:'C', title:'Talia', text:'The science society organises practical experiments that we do not always have time for in normal lessons. I like the freedom to test ideas, even when they fail, because mistakes often lead to better questions. The atmosphere is much less formal than a normal lesson, which makes students more willing to take risks.'},
+        {label:'D', title:'Jonah', text:'I recently became part of the school radio team. My job is mostly behind the scenes, helping with sound and timing, but I enjoy knowing that many students hear the programmes we produce every week. Even though listeners do not know exactly what I do, it is satisfying to feel that my work matters.'}
+      ],
+      questions:[
+        {id:'p3e2q1', prompt:'Who says the activity helped with language development?', answer:'A', explanation:'Sofia says learning lines improved confidence in English.'},
+        {id:'p3e2q2', prompt:'Who has changed their understanding of success?', answer:'B', explanation:'Arun now values preparation more than simply winning.'},
+        {id:'p3e2q3', prompt:'Who is comfortable with unsuccessful attempts?', answer:'C', explanation:'Talia says mistakes often lead to better questions.'},
+        {id:'p3e2q4', prompt:'Who contributes without usually being seen by the audience?', answer:'D', explanation:'Jonah works behind the scenes on the radio team.'},
+        {id:'p3e2q5', prompt:'Who joined partly because of a major personal change?', answer:'A', explanation:'Sofia joined after moving from another country.'},
+        {id:'p3e2q6', prompt:'Who enjoys intellectual disagreement?', answer:'B', explanation:'Arun enjoys defending ideas and hearing arguments.'},
+        {id:'p3e2q7', prompt:'Who likes having extra opportunities beyond normal lessons?', answer:'C', explanation:'The society organises experiments not always possible in class.'},
+        {id:'p3e2q8', prompt:'Who knows their work reaches a large group regularly?', answer:'D', explanation:'Many students hear the radio programmes every week.'},
+        {id:'p3e2q9', prompt:'Who values social connection as well as skill development?', answer:'A', explanation:'Sofia mentions speaking to people and improving English.'}
+      ]
+    },
+    {
+      title:'Exercise 3',
+      marks:7,
+      type:'notes',
+      skill:'note completion',
+      instructions:'Read the text and complete the notes.',
+      keywords:['mountain','guide','equipment','weather'],
+      passage:[
+        "The Cedar Hill Adventure Centre offers short mountain walks for beginners who want to enjoy nature without attempting a difficult climb. The most popular route lasts around two hours and includes several stops where guides explain local plants and wildlife. This makes the walk feel educational as well as enjoyable for people with little outdoor experience.",
+        "Visitors are told to wear strong shoes and bring a waterproof jacket because mountain weather can change quickly. The centre also lends walking poles to anyone who wants extra support on steeper sections of the path. Staff say this advice helps beginners feel properly prepared before they start.",
+        "At the halfway point, groups stop near a lookout area to drink water and take photographs. Guides use this break to answer questions and check that everyone still feels comfortable continuing the route. For many visitors, this pause is also a chance to enjoy the view without feeling rushed.",
+        "According to the manager, the biggest challenge is balancing safety with enjoyment. Staff need to monitor conditions carefully, especially after heavy rain, but they also want guests to feel relaxed and confident outdoors. The centre believes that a positive first experience may encourage people to try longer walks in the future."
+      ],
+      notesTask:'You are going to give a short talk about walks at the Cedar Hill Adventure Centre. Prepare some notes to use as the basis for your talk.',
+      notesInstruction:'Make short notes under each heading.',
+      noteSections:[
+        {
+          number:'10',
+          heading:'What beginners need for the walk',
+          marks:4,
+          bullets:[
+            {id:'p3e3q1', prompt:'route lasts about two', answers:['hours'], explanation:'The most popular route lasts around two hours.'},
+            {id:'p3e3q2', prompt:'wear strong', answers:['shoes'], explanation:'Visitors should wear strong shoes.'},
+            {id:'p3e3q3', prompt:'bring waterproof', answers:['jacket'], explanation:'They should bring a waterproof jacket.'},
+            {id:'p3e3q4', prompt:'centre can lend walking', answers:['poles'], explanation:'The centre lends walking poles.'}
+          ]
+        },
+        {
+          number:'11',
+          heading:'How guides and staff help visitors',
+          marks:3,
+          bullets:[
+            {id:'p3e3q5', prompt:'explain local plants and', answers:['wildlife'], explanation:'Guides explain local plants and wildlife.'},
+            {id:'p3e3q6', prompt:'answer visitors\'s', answers:['questions','question'], explanation:'Guides answer questions during the break.'},
+            {id:'p3e3q7', prompt:'monitor conditions after heavy', answers:['rain'], explanation:'Staff monitor conditions carefully after heavy rain.'}
+          ]
+        }
+      ]
+    },
+    {
+      title:'Exercise 4',
+      marks:6,
+      type:'mcq',
+      skill:'multiple choice',
+      instructions:'Read the text and choose the correct option A, B or C for each question.',
+      keywords:['theatre','audience','students','director'],
+      passage:[
+        "The Brighton Youth Theatre used to perform only one large production each year, but its director decided to change that pattern after noticing that many students wanted more chances to take part. The theatre now runs several shorter performances as well as workshops. As a result, more learners are able to join at different points in the year instead of waiting for one big event.",
+        "This new model has allowed beginners to join without feeling intimidated by a major role. Students can learn stage skills step by step, and some discover they enjoy costume design, lighting or organising rehearsals as much as acting itself. Teachers say this has widened students’ understanding of what theatre work can involve.",
+        "Parents and local residents have supported the changes by attending performances and donating materials. The director says this encouragement matters because young performers are often more motivated when they know their work is appreciated by the community. It has also helped the theatre build a stronger relationship with people outside the school.",
+        "There are still practical difficulties, especially the time needed to prepare several shows instead of one. Even so, the director believes the theatre is stronger now because more students can contribute in different ways. In the long term, she thinks this approach will create a more confident and flexible group of performers."
+      ],
+      questions:[
+        {id:'p3e4q1', prompt:'Why did the director change the theatre’s pattern?', options:['Students wanted more opportunities.','The building became larger.','Parents requested fewer shows.'], answer:'Students wanted more opportunities.', explanation:'The director noticed many students wanted more chances to take part.'},
+        {id:'p3e4q2', prompt:'How does the new model help beginners?', options:['It lets them learn gradually.','It guarantees a main role.','It removes all rehearsals.'], answer:'It lets them learn gradually.', explanation:'Beginners can join without feeling intimidated and learn step by step.'},
+        {id:'p3e4q3', prompt:'What did some students discover?', options:['They disliked acting.','They preferred working alone.','They enjoyed non-acting roles too.'], answer:'They enjoyed non-acting roles too.', explanation:'Some enjoy costume design, lighting or organising rehearsals.'},
+        {id:'p3e4q4', prompt:'Why is community support important?', options:['It reduces ticket prices.','It motivates the young performers.','It provides free transport.'], answer:'It motivates the young performers.', explanation:'The director says appreciation motivates performers.'},
+        {id:'p3e4q5', prompt:'What is still difficult?', options:['Preparing multiple shows.','Finding an audience.','Recruiting teachers.'], answer:'Preparing multiple shows.', explanation:'The time needed to prepare several shows is a practical difficulty.'},
+        {id:'p3e4q6', prompt:'What is the director’s final view?', options:['The change was unnecessary.','The theatre is stronger now.','The theatre should return to the old system.'], answer:'The theatre is stronger now.', explanation:'The final sentence states that the theatre is stronger now.'}
+      ]
+    }
+  ]
+}
+];
+
+let MEMORY_STATE_CACHE = null;
+
+function defaultState(){
+  return {paperId:PAPERS[0].id, answers:{}, teacherNotes:'', revealReviewAnswers:false};
+}
+
+function readStoredState(){
+  try{
+    if(window.localStorage){
+      return window.localStorage.getItem(STORAGE_KEY);
+    }
+  }catch(e){}
+  return MEMORY_STATE_CACHE;
+}
+
+function getState(){
+  const raw = readStoredState();
+  if(raw){
+    try{return JSON.parse(raw);}catch(e){}
+  }
+  return defaultState();
+}
+
+function saveState(state){
+  const value = JSON.stringify(state);
+  MEMORY_STATE_CACHE = value;
+  try{
+    if(window.localStorage){
+      window.localStorage.setItem(STORAGE_KEY, value);
+    }
+  }catch(e){}
+}
+function activePaper(){
+  const id = getState().paperId;
+  return PAPERS.find(p=>p.id===id) || PAPERS[0];
+}
+function populatePaperSelect(){
+  const sel = document.getElementById('paperSelect');
+  sel.innerHTML = PAPERS.map((p,i)=>`<option value="${p.id}">Paper ${i+1}: ${escapeHtml(p.title)}</option>`).join('');
+  sel.value = activePaper().id;
+}
+function loadSelectedPaper(){
+  const st = getState();
+  st.paperId = document.getElementById('paperSelect').value;
+  saveState(st);
+  currentExercise = 0;
+  activeKeywords = [];
+  refreshAll();
+  switchTab('paper');
+}
+function switchTab(tab){
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(btn=>btn.classList.toggle('active', btn.dataset.tab===tab));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+tab).classList.add('active');
+}
+function renderOverview(){
+  const p = activePaper();
+  const idx = PAPERS.findIndex(x=>x.id===p.id)+1;
+  document.getElementById('paperOverview').innerHTML = `
+    <strong>${escapeHtml(p.title)}</strong><br>
+    ${escapeHtml(p.overview)}<br><br>
+    <span class="badge badge-blue">Paper ${idx} loaded</span>
+    <span class="badge badge-green">4 reading exercises</span>
+    <span class="badge badge-gold">30 marks total</span>
+  `;
+  document.getElementById('currentPaperMini').innerHTML = `
+    <strong>${escapeHtml(p.title)}</strong><br>
+    <span style="color:var(--ink-soft)">${escapeHtml(p.overview)}</span>
+  `;
+}
+function renderPaper(){
+  const p = activePaper();
+  document.getElementById('exerciseNav').innerHTML = p.exercises.map((ex,idx)=>
+    `<button class="exercise-btn ${idx===currentExercise?'active':''}" onclick="setExercise(${idx})">${escapeHtml(ex.title)}</button>`
+  ).join('');
+  document.getElementById('exercisePanels').innerHTML = p.exercises.map((ex,idx)=>
+    `<div class="exercise-panel ${idx===currentExercise?'active':''}" id="exercisePanel${idx}">${renderExerciseHTML(ex, idx)}</div>`
+  ).join('');
+  renderKeywords();
+  renderExerciseMini();
+}
+function renderExerciseMini(){
+  const ex = activePaper().exercises[currentExercise];
+  document.getElementById('exerciseMini').innerHTML = `
+    <div class="stat-row"><span>Exercise</span><strong>${escapeHtml(ex.title)}</strong></div>
+    <div class="stat-row"><span>Skill</span><strong>${escapeHtml(ex.skill)}</strong></div>
+    <div class="stat-row"><span>Marks</span><strong>${ex.marks}</strong></div>
+    <div class="notice notice-gold" style="margin-top:10px">${escapeHtml(ex.instructions)}</div>
+  `;
+}
+function renderExerciseHTML(ex, exIndex){
+  let html = `
+    <div class="card" style="margin-bottom:14px;background:#fbfcfb">
+      <div class="card-header" style="margin-bottom:10px">${escapeHtml(ex.title)} <span style="font-size:0.82rem;font-weight:600;color:var(--ink-soft)">(${ex.marks} marks)</span></div>
+      <div class="notice notice-blue">${escapeHtml(ex.instructions)}</div>
+    </div>
+  `;
+  if(ex.type==='matching'){
+    html += `
+      <div class="card">
+        <div class="card-header">Texts</div>
+        ${ex.sections.map(sec=>`
+          <div class="question-block">
+            <div class="q-title">${sec.label}. ${escapeHtml(sec.title)}</div>
+            <div style="font-size:${1+currentFontSize*0.08}rem;line-height:1.8">${highlightKeywordsInText(escapeHtml(sec.text))}</div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="card">
+        <div class="card-header">Questions</div>
+        ${ex.questions.map((q,qIndex)=>`
+          <div class="question-block">
+            <div class="q-title">${qIndex+1}. ${escapeHtml(q.prompt)}</div>
+            <div class="match-grid">
+              <div class="q-meta">Choose A, B, C or D.</div>
+              <select onchange="saveAnswer('${q.id}', this.value)">
+                <option value="">--</option>
+                ${['A','B','C','D'].map(opt=>`<option value="${opt}" ${getAnswer(q.id)===opt?'selected':''}>${opt}</option>`).join('')}
+              </select>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  } else {
+    html += `
+      <div class="card">
+        <div class="card-header">Reading Text</div>
+        <div class="passage-box">${renderPassage(ex.passage)}</div>
+      </div>
+    `;
+    if(ex.type==='short_answers'){
+      html += `<div class="card"><div class="card-header">Questions</div>`;
+      ex.questions.forEach((q,qIndex)=>{
+        if(q.kind==='triple'){
+          html += `
+            <div class="question-block">
+              <div class="q-title">${qIndex+1}. ${escapeHtml(q.prompt)}</div>
+              <div class="form-grid">
+                <input type="text" class="short-input" value="${escapeAttr(getTripleAnswer(q.id,0))}" placeholder="Answer 1" oninput="saveTripleAnswer('${q.id}',0,this.value)">
+                <input type="text" class="short-input" value="${escapeAttr(getTripleAnswer(q.id,1))}" placeholder="Answer 2" oninput="saveTripleAnswer('${q.id}',1,this.value)">
+              </div>
+              <div class="form-row" style="margin-top:8px">
+                <input type="text" class="short-input" value="${escapeAttr(getTripleAnswer(q.id,2))}" placeholder="Answer 3" oninput="saveTripleAnswer('${q.id}',2,this.value)">
+              </div>
+            </div>
+          `;
+        } else {
+          html += `
+            <div class="question-block">
+              <div class="q-title">${qIndex+1}. ${escapeHtml(q.prompt)}</div>
+              <input type="text" class="short-input" value="${escapeAttr(getAnswer(q.id))}" oninput="saveAnswer('${q.id}', this.value)">
+            </div>
+          `;
+        }
+      });
+      html += `</div>`;
+    }
+    if(ex.type==='notes'){
+      html += `
+        <div class="card">
+          <div class="card-header">Notes task</div>
+          <div class="notice notice-blue" style="margin-bottom:12px">${escapeHtml(ex.notesTask)}</div>
+          <div class="notice notice-green">${escapeHtml(ex.notesInstruction)}</div>
+        </div>
+        <div class="card">
+      `;
+      ex.noteSections.forEach(section=>{
+        html += `
+          <div class="question-block">
+            <div class="q-title" style="margin-bottom:14px">${escapeHtml(section.number)} &nbsp; ${escapeHtml(section.heading)} <span style="float:right;color:var(--ink-soft);font-weight:700">[${section.marks}]</span></div>
+        `;
+        section.bullets.forEach((n,idx)=>{
+          html += `
+            <div class="note-grid" style="margin-bottom:10px;display:grid;grid-template-columns:24px 220px;justify-content:start;align-items:center;gap:12px">
+              <div style="display:flex;align-items:center;justify-content:center;min-height:46px">
+                <span style="font-size:1.1rem;line-height:1">•</span>
+              </div>
+              <input type="text" class="short-input" style="width:220px" value="${escapeAttr(getAnswer(n.id))}" oninput="saveAnswer('${n.id}', this.value)">
+            </div>
+          `;
+        });
+        html += `</div>`;
+      });
+      html += `</div>`;
+    }
+    if(ex.type==='mcq'){
+      html += `<div class="card"><div class="card-header">Questions</div>`;
+      ex.questions.forEach((q,qIndex)=>{
+        html += `
+          <div class="question-block">
+            <div class="q-title">${qIndex+1}. ${escapeHtml(q.prompt)}</div>
+            ${q.options.map((opt,optIndex)=>`
+              <label class="option">
+                <input type="radio" name="${q.id}" value="${escapeAttr(opt)}" ${getAnswer(q.id)===opt?'checked':''} onchange="saveAnswer('${q.id}', this.value)">
+                <span style="display:inline-flex;min-width:28px;font-weight:800;color:var(--sage-dark)">${String.fromCharCode(65+optIndex)}.</span>
+                <span>${escapeHtml(opt)}</span>
+              </label>
+            `).join('')}
+          </div>
+        `;
+      });
+      html += `</div>`;
+    }
+  }
+  return html;
+}
+function renderPassage(paragraphs){
+  return paragraphs.map((para, i)=>`
+    <div class="passage-line">
+      <div class="line-no" style="${showLineNumbers?'':'display:none'}">${i+1}</div>
+      <div class="line-text" style="font-size:${1+currentFontSize*0.08}rem">${highlightKeywordsInText(escapeHtml(para))}</div>
+    </div>
+  `).join('');
+}
+function renderKeywords(){
+  const ex = activePaper().exercises[currentExercise];
+  const box = document.getElementById('keywordChips');
+  box.innerHTML = (ex.keywords||[]).map(k=>`
+    <span class="keyword-chip ${activeKeywords.includes(k.toLowerCase())?'active':''}" onclick="toggleKeyword('${escapeJs(k.toLowerCase())}')">${escapeHtml(k)}</span>
+  `).join('');
+}
+function toggleKeyword(keyword){
+  if(activeKeywords.includes(keyword)){
+    activeKeywords = activeKeywords.filter(k=>k!==keyword);
+  }else{
+    activeKeywords.push(keyword);
+  }
+  renderPaper();
+}
+function clearKeywordHighlights(){
+  activeKeywords = [];
+  renderPaper();
+}
+function highlightKeywordsInText(text){
+  let out = text;
+  activeKeywords.forEach(k=>{
+    const escaped = k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(`(${escaped})`, 'gi');
+    out = out.replace(regex, '<span class="kw-highlight">$1</span>');
+  });
+  return out;
+}
+function setExercise(idx){
+  currentExercise = idx;
+  activeKeywords = [];
+  renderPaper();
+}
+function changeFont(dir){
+  currentFontSize = Math.max(-1, Math.min(4, currentFontSize + dir));
+  renderPaper();
+}
+function toggleLineNumbers(){
+  showLineNumbers = !showLineNumbers;
+  renderPaper();
+}
+function saveAnswer(id, value){
+  const st = getState();
+  st.answers[id] = value;
+  saveState(st);
+  renderResults();
+  renderReview();
+}
+function saveTripleAnswer(id, idx, value){
+  const st = getState();
+  st.answers[id] = st.answers[id] || ["","",""];
+  st.answers[id][idx] = value;
+  saveState(st);
+  renderResults();
+  renderReview();
+}
+function getAnswer(id){
+  const v = getState().answers[id];
+  return Array.isArray(v) ? '' : (v || '');
+}
+function getTripleAnswer(id, idx){
+  const v = getState().answers[id];
+  return Array.isArray(v) ? (v[idx] || '') : '';
+}
+function isCorrect(q, given){
+  if(given===undefined || given===null || given==='' || (Array.isArray(given) && given.every(x=>!String(x).trim()))) return false;
+  if(q.kind==='triple'){
+    const answers = Array.isArray(given) ? given.map(x=>normalizeAnswerText(x)).filter(Boolean) : [];
+    const accepted = (q.answers || []).map(normalizeAnswerText);
+    return countMatchesFlexible(answers, accepted) >= 3;
+  }
+  if(q.answer) return normalizeAnswerText(given)===normalizeAnswerText(q.answer);
+  const clean = normalizeAnswerText(given);
+  return (q.answers || []).map(normalizeAnswerText).some(ans=>clean.includes(ans) || ans.includes(clean));
+}
+function renderResults(){
+  const p = activePaper();
+  let total=0, answered=0, correct=0;
+  p.exercises.forEach(ex=>{
+    if(ex.type==='short_answers'){
+      ex.questions.forEach(q=>{
+        total++;
+        const given = getState().answers[q.id];
+        if(given && (!Array.isArray(given) || given.some(x=>String(x).trim()))) answered++;
+        if(isCorrect(q, given)) correct++;
+      });
+    }
+    if(ex.type==='matching'){
+      ex.questions.forEach(q=>{
+        total++;
+        const given = getState().answers[q.id];
+        if(given) answered++;
+        if(isCorrect(q, given)) correct++;
+      });
+    }
+    if(ex.type==='notes'){
+      ex.noteSections.forEach(section=>{
+        total += section.bullets.length;
+        let sectionAnswered = 0;
+        section.bullets.forEach(q=>{
+          const given = getState().answers[q.id];
+          if(given && String(given).trim()) sectionAnswered++;
+        });
+        answered += sectionAnswered;
+        correct += Math.min(scoreGroupedItemsAnyOrder(section.bullets), section.bullets.length);
+      });
+    }
+    if(ex.type==='mcq'){
+      ex.questions.forEach(q=>{
+        total++;
+        const given = getState().answers[q.id];
+        if(given) answered++;
+        if(isCorrect(q, given)) correct++;
+      });
+    }
+  });
+  const percent = answered ? Math.round((correct/answered)*100) : 0;
+  document.getElementById('scoreAnswered').textContent = answered;
+  document.getElementById('scoreCorrect').textContent = correct;
+  document.getElementById('scorePercent').textContent = percent + '%';
+  document.getElementById('scorePaper').textContent = PAPERS.findIndex(x=>x.id===p.id)+1;
+  document.getElementById('progressFill').style.width = (answered/total*100) + '%';
+
+  const strengths = [];
+  const targets = [];
+  if(correct >= 18) strengths.push('Strong overall accuracy across the paper.');
+  if(answered >= 20) strengths.push('You have completed most of the paper.');
+  if(checkSectionAccuracy('matching') >= 70) strengths.push('Multiple matching is becoming a strength.');
+  if(checkSectionAccuracy('notes') >= 70) strengths.push('Note completion answers are precise.');
+  if(!strengths.length) strengths.push('You are building familiarity with the paper structure.');
+
+  if(answered < total) targets.push('Finish all unanswered questions before reviewing.');
+  if(checkSectionAccuracy('mcq') < 60) targets.push('Re-read full options carefully in Exercise 4.');
+  if(checkSectionAccuracy('short_answers') < 60) targets.push('Keep answers brief and text-based in Exercise 1.');
+  if(checkSectionAccuracy('notes') < 60) targets.push('Look for exact words or close paraphrases in Exercise 3.');
+  if(!targets.length) targets.push('No major targets right now — keep practising under time limits.');
+
+  renderChecklist('strengthList', strengths, 'ok');
+  renderChecklist('targetList', targets, 'warn');
+}
+function checkSectionAccuracy(type){
+  const p = activePaper();
+  let total=0, correct=0;
+  p.exercises.forEach(ex=>{
+    if(ex.type!==type) return;
+    if(ex.type==='notes'){
+      ex.noteSections.forEach(section=>{
+        total += section.bullets.length;
+        correct += Math.min(scoreGroupedItemsAnyOrder(section.bullets), section.bullets.length);
+      });
+    } else {
+      const arr = ex.questions;
+      arr.forEach(q=>{
+        total++;
+        const given = getState().answers[q.id];
+        if(isCorrect(q, given)) correct++;
+      });
+    }
+  });
+  return total ? Math.round((correct/total)*100) : 0;
+}
+function renderChecklist(id, items, cls){
+  const icon = cls==='ok' ? '✓' : '!';
+  document.getElementById(id).innerHTML = items.map(t=>`
+    <li><span class="check-icon ${cls==='ok'?'ok':'warn'}">${icon}</span><span>${escapeHtml(t)}</span></li>
+  `).join('');
+}
+function renderReview(){
+  const p = activePaper();
+  const st = getState();
+  const reveal = !!st.revealReviewAnswers;
+  let html='';
+  p.exercises.forEach(ex=>{
+    if(ex.type==='notes'){
+      ex.noteSections.forEach(section=>{
+        const groupedGiven = section.bullets.map(q=>{
+          const raw = getState().answers[q.id];
+          return Array.isArray(raw) ? raw.filter(Boolean).join(' | ') : (raw || '');
+        }).filter(Boolean);
+        const groupedCorrect = section.bullets.map(q=> (q.answers || []).join(' / ')).join(' | ');
+        const groupedScore = Math.min(scoreGroupedItemsAnyOrder(section.bullets), section.bullets.length);
+        const good = groupedScore >= section.bullets.length;
+        html += `
+          <div class="review-item ${good?'good':'bad'}">
+            <strong>${escapeHtml(ex.title)} — ${escapeHtml(section.number)}. ${escapeHtml(section.heading)}</strong>
+            <div class="answer-box"><strong>Your notes:</strong> ${escapeHtml(groupedGiven.join(' | ') || 'No answer')}</div>
+            <div class="answer-box"><strong>Progress:</strong> ${groupedScore} / ${section.bullets.length} acceptable notes found</div>
+            <div class="answer-box"><strong>Why:</strong> Answers in this heading can be given in any order.</div>
+            ${reveal ? `<div class="answer-box"><strong>Accepted answers:</strong> ${escapeHtml(groupedCorrect)}</div>` : `<div class="answer-box"><strong>Accepted answers:</strong> Hidden until revealed</div>`}
+          </div>
+        `;
+      });
+    } else {
+      const arr = ex.questions;
+      arr.forEach((q, idx)=>{
+        const given = getState().answers[q.id];
+        const good = isCorrect(q, given);
+        const correctAnswer = q.answer ? q.answer : Array.isArray(q.answers) ? q.answers.join(' / ') : '';
+        let your = '';
+        if(Array.isArray(given)) your = given.filter(Boolean).join(' | ');
+        else your = given || 'No answer';
+        html += `
+          <div class="review-item ${good?'good':'bad'}">
+            <strong>${escapeHtml(ex.title)} — ${idx+1}.</strong> ${escapeHtml(q.prompt)}
+            <div class="answer-box"><strong>Your answer:</strong> ${escapeHtml(your)}</div>
+            ${reveal ? `<div class="answer-box"><strong>Suggested answer:</strong> ${escapeHtml(correctAnswer)}</div>` : `<div class="answer-box"><strong>Suggested answer:</strong> Hidden until revealed</div>`}
+            <div class="answer-box"><strong>Why:</strong> ${escapeHtml(q.explanation)}</div>
+          </div>
+        `;
+      });
+    }
+  });
+  document.getElementById('reviewContainer').innerHTML = html;
+  const status = paperCompletionStatus();
+  const btn = document.getElementById('revealAnswersBtn');
+  const notice = document.getElementById('reviewRevealNotice');
+  if(btn){
+    btn.disabled = !status.complete;
+    btn.style.opacity = status.complete ? '1' : '0.6';
+    btn.style.cursor = status.complete ? 'pointer' : 'not-allowed';
+  }
+  if(notice){
+    if(status.complete){
+      notice.style.display = '';
+      notice.textContent = 'Suggested answers can now be revealed because the paper is complete.';
+    } else {
+      notice.style.display = '';
+      notice.textContent = `Suggested answers unlock after the full paper is completed. (${status.answered}/${status.total} answered)`;
+    }
+  }
+}
+function renderTeacher(){
+  document.getElementById('teacherNotes').value = getState().teacherNotes || '';
+  const comments = activePaper().comments || [];
+  document.getElementById('commentBank').innerHTML = comments.map(c=>`
+    <button class="comment-btn" onclick="appendTeacherNote(${JSON.stringify(c)})">${escapeHtml(c)}</button>
+  `).join('');
+}
+function appendTeacherNote(text){
+  const box = document.getElementById('teacherNotes');
+  box.value = box.value ? box.value + '\n• ' + text : '• ' + text;
+  saveTeacherNotes();
+}
+function saveTeacherNotes(){
+  const st = getState();
+  st.teacherNotes = document.getElementById('teacherNotes').value;
+  saveState(st);
+}
+function copyTeacherNotes(){
+  navigator.clipboard.writeText(document.getElementById('teacherNotes').value || '');
+  alert('Teacher notes copied.');
+}
+function setMode(mode){
+  isTeacherMode = mode==='teacher';
+  document.getElementById('btnStudentMode').classList.toggle('active', !isTeacherMode);
+  document.getElementById('btnTeacherMode').classList.toggle('active', isTeacherMode);
+  document.getElementById('tabTeacher').style.display = isTeacherMode ? '' : 'none';
+  if(!isTeacherMode && currentTab==='teacher') switchTab('overview');
+}
+function requestTeacherMode(){
+  document.getElementById('modalPassword').classList.add('show');
+  document.getElementById('teacherPwd').value='';
+  document.getElementById('pwdError').style.display='none';
+}
+function checkTeacherPassword(){
+  if(document.getElementById('teacherPwd').value===TEACHER_PWD){
+    closeModal();
+    setMode('teacher');
+    switchTab('teacher');
+  } else {
+    document.getElementById('pwdError').style.display='block';
+  }
+}
+function closeModal(){ document.getElementById('modalPassword').classList.remove('show'); }
+function resetAll(){
+  if(confirm('Reset all saved answers and notes?')){
+    localStorage.removeItem(STORAGE_KEY);
+    currentExercise = 0;
+    activeKeywords = [];
+    refreshAll();
+  }
+}
+
+function paperCompletionStatus(){
+  const p = activePaper();
+  let total = 0;
+  let answered = 0;
+  p.exercises.forEach(ex=>{
+    if(ex.type==='notes'){
+      ex.noteSections.forEach(section=>{
+        section.bullets.forEach(q=>{
+          total++;
+          const given = getState().answers[q.id];
+          if(given && String(given).trim()) answered++;
+        });
+      });
+    } else {
+      ex.questions.forEach(q=>{
+        total++;
+        const given = getState().answers[q.id];
+        if(Array.isArray(given)){
+          if(given.some(x=>String(x).trim())) answered++;
+        } else if(given && String(given).trim()){
+          answered++;
+        }
+      });
+    }
+  });
+  return {total, answered, complete: total>0 && answered===total};
+}
+function toggleReviewAnswers(){
+  const status = paperCompletionStatus();
+  if(!status.complete){
+    const notice = document.getElementById('reviewRevealNotice');
+    if(notice){
+      notice.style.display = '';
+      notice.textContent = `Complete the whole paper first before revealing suggested answers. (${status.answered}/${status.total} answered)`;
+    }
+    return;
+  }
+  const st = getState();
+  st.revealReviewAnswers = !st.revealReviewAnswers;
+  saveState(st);
+  renderReview();
+}
+function normalizeAnswerText(s){
+  return String(s || '').toLowerCase().trim().replace(/[.,!?;:()\[\]{}]/g,'').replace(/\s+/g,' ');
+}
+function countMatchesFlexible(givenList, answerList){
+  const used = new Set();
+  let matches = 0;
+  givenList.forEach(g=>{
+    for(let i=0;i<answerList.length;i++){
+      if(used.has(i)) continue;
+      const a = answerList[i];
+      if(g && a && (g.includes(a) || a.includes(g))){
+        used.add(i);
+        matches++;
+        break;
+      }
+    }
+  });
+  return matches;
+}
+function scoreGroupedItemsAnyOrder(items){
+  const normalizedAnswers = [];
+  const given = [];
+  items.forEach(item=>{
+    (item.answers || []).forEach(a=>normalizedAnswers.push(normalizeAnswerText(a)));
+    const raw = getState().answers[item.id];
+    if(Array.isArray(raw)){
+      raw.forEach(v=>{ const n=normalizeAnswerText(v); if(n) given.push(n); });
+    }else{
+      const n = normalizeAnswerText(raw);
+      if(n) given.push(n);
+    }
+  });
+  return countMatchesFlexible(given, normalizedAnswers);
+}
+
+
+function clearCurrentPaperAnswers(){
+  if(!confirm('Clear all answers from this practice paper?')) return;
+  const st = getState();
+  const p = activePaper();
+  p.exercises.forEach(ex=>{
+    if(ex.type==='notes'){
+      ex.noteSections.forEach(section=>{
+        section.bullets.forEach(q=>{
+          delete st.answers[q.id];
+        });
+      });
+    } else {
+      ex.questions.forEach(q=>{
+        delete st.answers[q.id];
+      });
+    }
+  });
+  st.revealReviewAnswers = false;
+  saveState(st);
+  renderPaper();
+  renderResults();
+  renderReview();
+}
+
+function refreshAll(){
+  populatePaperSelect();
+  renderOverview();
+  renderPaper();
+  renderResults();
+  renderReview();
+  renderTeacher();
+}
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+function escapeAttr(str){ return escapeHtml(str || ''); }
+function escapeJs(str){ return String(str).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+window.addEventListener('DOMContentLoaded', refreshAll);
+</script>
+</body>
+</html>
