@@ -31,6 +31,13 @@ test('locks answer editing after an exam is submitted', () => {
   assert.match(html, /answerDisabledAttr\(\)/);
 });
 
+test('exam submit locks the attempt and new attempt clears it', () => {
+  assert.match(html, /st\.examSubmitted\s*=\s*true/);
+  assert.match(html, /function\s+clearPaperAnswersFromState\s*\(/);
+  assert.match(html, /clearPaperAnswersFromState\(st\)/);
+  assert.match(html, /Start a new exam attempt\?/);
+});
+
 test('renames existing teacher/student setMode to avoid mode collision', () => {
   assert.doesNotMatch(html, /function\s+setMode\s*\(/);
   assert.match(html, /function\s+setRoleMode\s*\(/);
