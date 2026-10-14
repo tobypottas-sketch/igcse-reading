@@ -2,7 +2,7 @@ name: Apply Sixth Hardening
 on:
   push:
     branches: [fix/sixth-hardening-audit-20261015]
-    paths: [.github/audit6-trigger]
+    paths: ['.github/audit6-trigger']
 permissions:
   contents: write
 jobs:
@@ -22,13 +22,7 @@ jobs:
           p=Path('index.html')
           s=p.read_text()
           anchor='function activePaper(){'
-          helper="""function removeStoredState(){
-  MEMORY_STATE_CACHE=null;
-  try{
-    if(window.localStorage) window.localStorage.removeItem(storageKey());
-  }catch(e){}
-}
-function activePaper(){"""
+          helper="function removeStoredState(){\n  MEMORY_STATE_CACHE=null;\n  try{\n    if(window.localStorage) window.localStorage.removeItem(storageKey());\n  }catch(e){}\n}\nfunction activePaper(){"
           if 'function removeStoredState()' not in s:
               if anchor not in s: raise SystemExit('activePaper anchor missing')
               s=s.replace(anchor, helper, 1)
