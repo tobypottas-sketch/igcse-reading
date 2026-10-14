@@ -16,6 +16,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - run: node .github/scripts/prepare-transformer.mjs
       - run: node .github/scripts/apply-practice-exam-mode.mjs
       - run: node --test tests/practice-exam-mode.test.mjs
       - name: Commit generated app change
