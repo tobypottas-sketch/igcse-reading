@@ -1064,6 +1064,12 @@ function saveState(state){
     }
   }catch(e){}
 }
+function removeStoredState(){
+  MEMORY_STATE_CACHE=null;
+  try{
+    if(window.localStorage) window.localStorage.removeItem(storageKey());
+  }catch(e){}
+}
 function activePaper(){
   const id = getState().paperId;
   return PAPERS.find(p=>p.id===id) || PAPERS[0];
@@ -1642,7 +1648,7 @@ function startNewExamAttempt(){
 }
 function resetAll(){
   if(confirm('Reset all saved answers and notes?')){
-    localStorage.removeItem(storageKey());
+    removeStoredState();
     currentExercise = 0;
     activeKeywords = [];
     refreshAll();
