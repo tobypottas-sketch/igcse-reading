@@ -1,0 +1,16 @@
+name: Review Explanation Lock
+
+on:
+  push:
+    branches:
+      - fix/hide-review-explanations
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node --test tests/review-explanation-lock.test.mjs tests/practice-exam-mode.test.mjs tests/listening-style-refresh.test.mjs
