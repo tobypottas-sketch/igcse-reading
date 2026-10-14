@@ -1541,9 +1541,16 @@ function renderReview(){
 function renderTeacher(){
   document.getElementById('teacherNotes').value = getState().teacherNotes || '';
   const comments = activePaper().comments || [];
-  document.getElementById('commentBank').innerHTML = comments.map(c=>`
-    <button class="comment-btn" onclick="appendTeacherNote(${JSON.stringify(c)})">${escapeHtml(c)}</button>
-  `).join('');
+  const bank = document.getElementById('commentBank');
+  bank.replaceChildren();
+  comments.forEach(c=>{
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'comment-btn';
+    button.textContent = c;
+    button.addEventListener('click', ()=>appendTeacherNote(c));
+    bank.appendChild(button);
+  });
 }
 function appendTeacherNote(text){
   const box = document.getElementById('teacherNotes');
@@ -1690,9 +1697,11 @@ function normalizeAnswerText(s){
 function countMatchesFlexible(givenList, answerList){
   const given = givenList.map(normalizeAnswerText).filter(Boolean);
   const accepted = answerList.map(normalizeAnswerText).filter(Boolean);
+  const hasNegation = value => /(?:^|\s)(?:not|never|no|without|cannot|can't|cant|isn't|isnt|wasn't|wasnt|didn't|didnt|won't|wont)(?:\s|$)/.test(value);
   const phraseMatch = (left, right) => {
     if(!left || !right) return false;
     if(left === right) return true;
+    if(hasNegation(left) !== hasNegation(right)) return false;
     const shorter = left.length <= right.length ? left : right;
     const longer = left.length <= right.length ? right : left;
     if(!shorter.includes(' ') && shorter.length < 4) return false;
