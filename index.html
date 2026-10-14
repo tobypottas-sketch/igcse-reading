@@ -1465,7 +1465,7 @@ function renderReview(){
             <strong>${escapeHtml(ex.title)} — ${escapeHtml(section.number)}. ${escapeHtml(section.heading)}</strong>
             <div class="answer-box"><strong>Your notes:</strong> ${escapeHtml(groupedGiven.join(' | ') || 'No answer')}</div>
             <div class="answer-box"><strong>Progress:</strong> ${groupedScore} / ${section.bullets.length} acceptable notes found</div>
-            <div class="answer-box"><strong>Why:</strong> Answers in this heading can be given in any order.</div>
+            ${reveal ? `<div class="answer-box"><strong>Why:</strong> Answers in this heading can be given in any order.</div>` : ''}
             ${reveal ? `<div class="answer-box"><strong>Accepted answers:</strong> ${escapeHtml(groupedCorrect)}</div>` : `<div class="answer-box"><strong>Accepted answers:</strong> Hidden until revealed</div>`}
           </div>
         `;
@@ -1484,7 +1484,7 @@ function renderReview(){
             <strong>${escapeHtml(ex.title)} — ${idx+1}.</strong> ${escapeHtml(q.prompt)}
             <div class="answer-box"><strong>Your answer:</strong> ${escapeHtml(your)}</div>
             ${reveal ? `<div class="answer-box"><strong>Suggested answer:</strong> ${escapeHtml(correctAnswer)}</div>` : `<div class="answer-box"><strong>Suggested answer:</strong> Hidden until revealed</div>`}
-            <div class="answer-box"><strong>Why:</strong> ${escapeHtml(q.explanation)}</div>
+            ${reveal ? `<div class="answer-box"><strong>Why:</strong> ${escapeHtml(q.explanation)}</div>` : ''}
           </div>
         `;
       });
