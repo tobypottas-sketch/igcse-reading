@@ -105,6 +105,13 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--sage);bo
 .notice-gold{background:var(--gold-light);border-color:#efe0b5}
 .notice-rose{background:var(--rose-light);border-color:#e7c7c7}
 
+.study-mode-bar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:12px 14px;margin-bottom:16px;border:1px solid var(--line);border-radius:11px;background:#fbfcfb}
+.study-mode-left{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.study-mode-label{font-weight:800;color:var(--sage-dark)}
+.study-mode-btn{border:1px solid var(--line);background:#fff;color:var(--ink);padding:8px 14px;border-radius:9px;cursor:pointer;font:inherit;font-size:.82rem;font-weight:800}
+.study-mode-btn.active{background:var(--sage);border-color:var(--sage);color:#fff}
+.study-mode-status{font-size:.8rem;color:var(--ink-soft)}
+.study-mode-actions{display:flex;gap:8px;flex-wrap:wrap}
 .layout{display:grid;grid-template-columns:310px 1fr;gap:18px}
 @media(max-width:1020px){.layout{grid-template-columns:1fr}}
 .sidebar-box{
@@ -256,7 +263,7 @@ button,input,textarea,select{
       Paper 1 practice<br>Exercises 1–4 only<br>Classroom training tool
     </div>
     <div class="header-actions">
-      <button id="btnStudentMode" class="active" onclick="setMode('student')">Student Mode</button>
+      <button id="btnStudentMode" class="active" onclick="setRoleMode('student')">Student Mode</button>
       <button id="btnTeacherMode" onclick="requestTeacherMode()">Teacher Mode</button>
     </div>
   </div>
@@ -304,6 +311,18 @@ button,input,textarea,select{
   <section class="panel" id="panel-paper">
     <div class="card">
       <div class="card-header">Paper Practice</div>
+      <div class="study-mode-bar" id="studyModeControls">
+        <div class="study-mode-left">
+          <span class="study-mode-label">Working mode</span>
+          <button class="study-mode-btn" id="practiceModeButton" onclick="setStudyMode('practice')">Practice Mode</button>
+          <button class="study-mode-btn" id="examModeButton" onclick="setStudyMode('exam')">Exam Mode</button>
+          <span class="study-mode-status" id="studyModeStatus"></span>
+        </div>
+        <div class="study-mode-actions">
+          <button class="btn btn-primary" id="submitExamButton" onclick="submitExam()" style="display:none">Submit Paper</button>
+          <button class="btn btn-secondary" id="newExamAttemptButton" onclick="startNewExamAttempt()" style="display:none">Start new attempt</button>
+        </div>
+      </div>
       <div class="layout">
         <div>
           <div class="sidebar-box">
@@ -797,7 +816,14 @@ const PAPERS = [
 let MEMORY_STATE_CACHE = null;
 
 function defaultState(){
-  return {paperId:PAPERS[0].id, answers:{}, teacherNotes:'', revealReviewAnswers:false};
+  return {paperId:PAPERS[0].id, answers:{}, teacherNotes:'', revealReviewAnswers:false, studyMode:'practice', examSubmitted:false};
+}
+function normalizeState(state){
+  const next = state && typeof state==='object' ? state : defaultState();
+  next.studyMode = next.studyMode==='exam' ? 'exam' : 'practice';
+  next.examSubmitted = !!next.examSubmitted;
+  if(!next.answers || typeof next.answers!=='object') next.answers = {};
+  return next;
 }
 
 function readStoredState(){
@@ -812,7 +838,7 @@ function readStoredState(){
 function getState(){
   const raw = readStoredState();
   if(raw){
-    try{return JSON.parse(raw);}catch(e){}
+    try{return normalizeState(JSON.parse(raw));}catch(e){}
   }
   return defaultState();
 }
@@ -838,13 +864,30 @@ function populatePaperSelect(){
 function loadSelectedPaper(){
   const st = getState();
   st.paperId = document.getElementById('paperSelect').value;
+  st.examSubmitted = false;
+  st.revealReviewAnswers = false;
   saveState(st);
   currentExercise = 0;
   activeKeywords = [];
   refreshAll();
   switchTab('paper');
 }
+function canViewFeedback(){
+  const st = getState();
+  return st.studyMode!=='exam' || st.examSubmitted;
+}
+function answersLocked(){
+  const st = getState();
+  return st.studyMode==='exam' && st.examSubmitted;
+}
+function answerDisabledAttr(){
+  return answersLocked() ? 'disabled aria-disabled="true"' : '';
+}
 function switchTab(tab){
+  if(!canViewFeedback()&&(tab==='results'||tab==='review')){
+    alert('Exam feedback unlocks after you submit the paper.');
+    tab = 'paper';
+  }
   currentTab = tab;
   document.querySelectorAll('.tab-btn').forEach(btn=>btn.classList.toggle('active', btn.dataset.tab===tab));
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
@@ -865,8 +908,30 @@ function renderOverview(){
     <span style="color:var(--ink-soft)">${escapeHtml(p.overview)}</span>
   `;
 }
+function renderStudyModeControls(){
+  const st = getState();
+  const exam = st.studyMode==='exam';
+  const submitted = exam && st.examSubmitted;
+  const practiceBtn = document.getElementById('practiceModeButton');
+  const examBtn = document.getElementById('examModeButton');
+  const status = document.getElementById('studyModeStatus');
+  const submit = document.getElementById('submitExamButton');
+  const restart = document.getElementById('newExamAttemptButton');
+  if(practiceBtn) practiceBtn.classList.toggle('active', !exam);
+  if(examBtn) examBtn.classList.toggle('active', exam);
+  if(status){
+    status.textContent = !exam
+      ? 'Feedback and review are available while you practise.'
+      : submitted
+        ? 'Exam submitted. Answers are locked and feedback is available.'
+        : 'Feedback stays hidden until you submit the paper.';
+  }
+  if(submit) submit.style.display = exam && !submitted ? '' : 'none';
+  if(restart) restart.style.display = submitted ? '' : 'none';
+}
 function renderPaper(){
   const p = activePaper();
+  renderStudyModeControls();
   document.getElementById('exerciseNav').innerHTML = p.exercises.map((ex,idx)=>
     `<button class="exercise-btn ${idx===currentExercise?'active':''}" onclick="setExercise(${idx})">${escapeHtml(ex.title)}</button>`
   ).join('');
@@ -910,7 +975,7 @@ function renderExerciseHTML(ex, exIndex){
             <div class="q-title">${qIndex+1}. ${escapeHtml(q.prompt)}</div>
             <div class="match-grid">
               <div class="q-meta">Choose A, B, C or D.</div>
-              <select onchange="saveAnswer('${q.id}', this.value)">
+              <select ${answerDisabledAttr()} onchange="saveAnswer('${q.id}', this.value)">
                 <option value="">--</option>
                 ${['A','B','C','D'].map(opt=>`<option value="${opt}" ${getAnswer(q.id)===opt?'selected':''}>${opt}</option>`).join('')}
               </select>
@@ -934,11 +999,11 @@ function renderExerciseHTML(ex, exIndex){
             <div class="question-block">
               <div class="q-title">${qIndex+1}. ${escapeHtml(q.prompt)}</div>
               <div class="form-grid">
-                <input type="text" class="short-input" value="${escapeAttr(getTripleAnswer(q.id,0))}" placeholder="Answer 1" oninput="saveTripleAnswer('${q.id}',0,this.value)">
-                <input type="text" class="short-input" value="${escapeAttr(getTripleAnswer(q.id,1))}" placeholder="Answer 2" oninput="saveTripleAnswer('${q.id}',1,this.value)">
+                <input type="text" class="short-input" ${answerDisabledAttr()} value="${escapeAttr(getTripleAnswer(q.id,0))}" placeholder="Answer 1" oninput="saveTripleAnswer('${q.id}',0,this.value)">
+                <input type="text" class="short-input" ${answerDisabledAttr()} value="${escapeAttr(getTripleAnswer(q.id,1))}" placeholder="Answer 2" oninput="saveTripleAnswer('${q.id}',1,this.value)">
               </div>
               <div class="form-row" style="margin-top:8px">
-                <input type="text" class="short-input" value="${escapeAttr(getTripleAnswer(q.id,2))}" placeholder="Answer 3" oninput="saveTripleAnswer('${q.id}',2,this.value)">
+                <input type="text" class="short-input" ${answerDisabledAttr()} value="${escapeAttr(getTripleAnswer(q.id,2))}" placeholder="Answer 3" oninput="saveTripleAnswer('${q.id}',2,this.value)">
               </div>
             </div>
           `;
@@ -946,7 +1011,7 @@ function renderExerciseHTML(ex, exIndex){
           html += `
             <div class="question-block">
               <div class="q-title">${qIndex+1}. ${escapeHtml(q.prompt)}</div>
-              <input type="text" class="short-input" value="${escapeAttr(getAnswer(q.id))}" oninput="saveAnswer('${q.id}', this.value)">
+              <input type="text" class="short-input" ${answerDisabledAttr()} value="${escapeAttr(getAnswer(q.id))}" oninput="saveAnswer('${q.id}', this.value)">
             </div>
           `;
         }
@@ -973,7 +1038,7 @@ function renderExerciseHTML(ex, exIndex){
               <div style="display:flex;align-items:center;justify-content:center;min-height:46px">
                 <span style="font-size:1.1rem;line-height:1">•</span>
               </div>
-              <input type="text" class="short-input" style="width:220px" value="${escapeAttr(getAnswer(n.id))}" oninput="saveAnswer('${n.id}', this.value)">
+              <input type="text" class="short-input" ${answerDisabledAttr()} style="width:220px" value="${escapeAttr(getAnswer(n.id))}" oninput="saveAnswer('${n.id}', this.value)">
             </div>
           `;
         });
@@ -989,7 +1054,7 @@ function renderExerciseHTML(ex, exIndex){
             <div class="q-title">${qIndex+1}. ${escapeHtml(q.prompt)}</div>
             ${q.options.map((opt,optIndex)=>`
               <label class="option">
-                <input type="radio" name="${q.id}" value="${escapeAttr(opt)}" ${getAnswer(q.id)===opt?'checked':''} onchange="saveAnswer('${q.id}', this.value)">
+                <input type="radio" name="${q.id}" value="${escapeAttr(opt)}" ${getAnswer(q.id)===opt?'checked':''} ${answerDisabledAttr()} onchange="saveAnswer('${q.id}', this.value)">
                 <span style="display:inline-flex;min-width:28px;font-weight:800;color:var(--sage-dark)">${String.fromCharCode(65+optIndex)}.</span>
                 <span>${escapeHtml(opt)}</span>
               </label>
@@ -1052,6 +1117,7 @@ function toggleLineNumbers(){
   renderPaper();
 }
 function saveAnswer(id, value){
+  if(answersLocked()) return;
   const st = getState();
   st.answers[id] = value;
   saveState(st);
@@ -1059,6 +1125,7 @@ function saveAnswer(id, value){
   renderReview();
 }
 function saveTripleAnswer(id, idx, value){
+  if(answersLocked()) return;
   const st = getState();
   st.answers[id] = st.answers[id] || ["","",""];
   st.answers[id][idx] = value;
@@ -1087,6 +1154,16 @@ function isCorrect(q, given){
 }
 function renderResults(){
   const p = activePaper();
+  if(!canViewFeedback()){
+    document.getElementById('scoreAnswered').textContent = '—';
+    document.getElementById('scoreCorrect').textContent = '—';
+    document.getElementById('scorePercent').textContent = '—';
+    document.getElementById('scorePaper').textContent = PAPERS.findIndex(x=>x.id===p.id)+1;
+    document.getElementById('progressFill').style.width = '0%';
+    renderChecklist('strengthList', ['Submit the paper to unlock exam feedback.'], 'ok');
+    renderChecklist('targetList', [], 'warn');
+    return;
+  }
   let total=0, answered=0, correct=0;
   p.exercises.forEach(ex=>{
     if(ex.type==='short_answers'){
@@ -1180,6 +1257,14 @@ function renderChecklist(id, items, cls){
 function renderReview(){
   const p = activePaper();
   const st = getState();
+  if(!canViewFeedback()){
+    document.getElementById('reviewContainer').innerHTML = '<div class="notice notice-gold">Exam feedback unlocks after you submit the paper.</div>';
+    const btn = document.getElementById('revealAnswersBtn');
+    const notice = document.getElementById('reviewRevealNotice');
+    if(btn){ btn.disabled = true; btn.style.opacity = '0.6'; btn.style.cursor = 'not-allowed'; }
+    if(notice){ notice.style.display = ''; notice.textContent = 'Submit the exam before reviewing answers.'; }
+    return;
+  }
   const reveal = !!st.revealReviewAnswers;
   let html='';
   p.exercises.forEach(ex=>{
@@ -1262,7 +1347,7 @@ function copyTeacherNotes(){
   navigator.clipboard.writeText(document.getElementById('teacherNotes').value || '');
   alert('Teacher notes copied.');
 }
-function setMode(mode){
+function setRoleMode(mode){
   isTeacherMode = mode==='teacher';
   document.getElementById('btnStudentMode').classList.toggle('active', !isTeacherMode);
   document.getElementById('btnTeacherMode').classList.toggle('active', isTeacherMode);
@@ -1277,13 +1362,68 @@ function requestTeacherMode(){
 function checkTeacherPassword(){
   if(document.getElementById('teacherPwd').value===TEACHER_PWD){
     closeModal();
-    setMode('teacher');
+    setRoleMode('teacher');
     switchTab('teacher');
   } else {
     document.getElementById('pwdError').style.display='block';
   }
 }
 function closeModal(){ document.getElementById('modalPassword').classList.remove('show'); }
+function clearPaperAnswersFromState(st){
+  const p = activePaper();
+  p.exercises.forEach(ex=>{
+    if(ex.type==='notes'){
+      ex.noteSections.forEach(section=>section.bullets.forEach(q=>delete st.answers[q.id]));
+    }else{
+      ex.questions.forEach(q=>delete st.answers[q.id]);
+    }
+  });
+}
+function setStudyMode(mode){
+  if(mode!=='practice' && mode!=='exam') return;
+  const st = getState();
+  if(st.studyMode===mode) return;
+  const status = paperCompletionStatus();
+  if(status.answered>0 && !confirm('Switch mode? This will clear the answers on the current paper so the new attempt starts clean.')) return;
+  clearPaperAnswersFromState(st);
+  st.studyMode = mode;
+  st.examSubmitted = false;
+  st.revealReviewAnswers = false;
+  saveState(st);
+  currentExercise = 0;
+  activeKeywords = [];
+  refreshAll();
+  switchTab('paper');
+}
+function submitExam(){
+  const st = getState();
+  if(st.studyMode!=='exam' || st.examSubmitted) return;
+  const status = paperCompletionStatus();
+  const message = status.complete
+    ? 'Submit this paper? Your answers will be locked.'
+    : 'You have answered ' + status.answered + '/' + status.total + ' questions. Submit anyway? Your answers will be locked.';
+  if(!confirm(message)) return;
+  st.examSubmitted = true;
+  st.revealReviewAnswers = false;
+  saveState(st);
+  renderPaper();
+  renderResults();
+  renderReview();
+  switchTab('results');
+}
+function startNewExamAttempt(){
+  const st = getState();
+  if(st.studyMode!=='exam') return;
+  if(!confirm('Start a new exam attempt? This will clear the current paper answers.')) return;
+  clearPaperAnswersFromState(st);
+  st.examSubmitted = false;
+  st.revealReviewAnswers = false;
+  saveState(st);
+  currentExercise = 0;
+  activeKeywords = [];
+  refreshAll();
+  switchTab('paper');
+}
 function resetAll(){
   if(confirm('Reset all saved answers and notes?')){
     localStorage.removeItem(STORAGE_KEY);
@@ -1372,22 +1512,10 @@ function scoreGroupedItemsAnyOrder(items){
 
 
 function clearCurrentPaperAnswers(){
+  if(answersLocked()){ alert('This exam has been submitted. Start a new attempt to change answers.'); return; }
   if(!confirm('Clear all answers from this practice paper?')) return;
   const st = getState();
-  const p = activePaper();
-  p.exercises.forEach(ex=>{
-    if(ex.type==='notes'){
-      ex.noteSections.forEach(section=>{
-        section.bullets.forEach(q=>{
-          delete st.answers[q.id];
-        });
-      });
-    } else {
-      ex.questions.forEach(q=>{
-        delete st.answers[q.id];
-      });
-    }
-  });
+  clearPaperAnswersFromState(st);
   st.revealReviewAnswers = false;
   saveState(st);
   renderPaper();
