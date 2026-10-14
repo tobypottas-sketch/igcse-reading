@@ -1362,7 +1362,7 @@ function isCorrect(q, given){
   }
   if(q.answer) return normalizeAnswerText(given)===normalizeAnswerText(q.answer);
   const clean = normalizeAnswerText(given);
-  return (q.answers || []).map(normalizeAnswerText).some(ans=>clean.includes(ans) || ans.includes(clean));
+  return countMatchesFlexible([clean], q.answers || []) >= 1;
 }
 function renderResults(){
   const p = activePaper();
@@ -1688,14 +1688,28 @@ function normalizeAnswerText(s){
   return String(s || '').toLowerCase().trim().replace(/[.,!?;:()\[\]{}]/g,'').replace(/\s+/g,' ');
 }
 function countMatchesFlexible(givenList, answerList){
-  const used = new Set();
-  let matches = 0;
-  givenList.forEach(g=>{
-    for(let i=0;i<answerList.length;i++){
-      if(used.has(i)) continue;
-      const a = answerList[i];
-      if(g && a && (g.includes(a) || a.includes(g))){
-        used.add(i);
+  const given = givenList.map(normalizeAnswerText).filter(Boolean);
+  const accepted = answerList.map(normalizeAnswerText).filter(Boolean);
+  const phraseMatch = (left, right) => {
+    if(!left || !right) return false;
+    if(left === right) return true;
+    const shorter = left.length <= right.length ? left : right;
+    const longer = left.length <= right.length ? right : left;
+    if(!shorter.includes(' ') && shorter.length < 4) return false;
+    return (` ${longer} `).includes(` ${shorter} `);
+  };
+  const concepts=[];
+  accepted.forEach(a=>{
+    const existing=concepts.find(group=>group.some(v=>phraseMatch(a,v)));
+    if(existing) existing.push(a); else concepts.push([a]);
+  });
+  const usedGiven=new Set();
+  let matches=0;
+  concepts.forEach(group=>{
+    for(let i=0;i<given.length;i++){
+      if(usedGiven.has(i)) continue;
+      if(group.some(a=>phraseMatch(given[i],a))){
+        usedGiven.add(i);
         matches++;
         break;
       }
