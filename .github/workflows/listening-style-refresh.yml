@@ -1,0 +1,19 @@
+name: Listening Style Refresh
+
+on:
+  push:
+    branches:
+      - feat/listening-style-refresh
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node --test tests/listening-style-refresh.test.mjs
