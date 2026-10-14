@@ -1582,10 +1582,11 @@ function submitExam(){
   const st = getState();
   if(st.studyMode!=='exam' || st.examSubmitted) return;
   const status = paperCompletionStatus();
-  const message = status.complete
-    ? 'Submit this paper? Your answers will be locked.'
-    : 'You have answered ' + status.answered + '/' + status.total + ' questions. Submit anyway? Your answers will be locked.';
-  if(!confirm(message)) return;
+  if(!status.complete){
+    alert('Complete all questions before submitting Exam Mode. (' + status.answered + '/' + status.total + ' answered)');
+    return;
+  }
+  if(!confirm('Submit this paper? Your answers will be locked.')) return;
   st.examSubmitted = true;
   st.revealReviewAnswers = false;
   saveState(st);
