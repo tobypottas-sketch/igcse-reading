@@ -1704,18 +1704,25 @@ function countMatchesFlexible(givenList, answerList){
   const given = givenList.map(normalizeAnswerText).filter(Boolean);
   const accepted = answerList.map(normalizeAnswerText).filter(Boolean);
   const hasNegation = value => /(?:^|\s)(?:not|never|no|without|cannot|can't|cant|isn't|isnt|wasn't|wasnt|didn't|didnt|won't|wont)(?:\s|$)/.test(value);
-  const phraseMatch = (left, right) => {
+  const phraseContained = (needle, haystack) => (` ${haystack} `).includes(` ${needle} `);
+  const conceptMatch = (left, right) => {
     if(!left || !right) return false;
     if(left === right) return true;
     if(hasNegation(left) !== hasNegation(right)) return false;
     const shorter = left.length <= right.length ? left : right;
     const longer = left.length <= right.length ? right : left;
     if(!shorter.includes(' ') && shorter.length < 4) return false;
-    return (` ${longer} `).includes(` ${shorter} `);
+    return phraseContained(shorter, longer);
+  };
+  const answerMatch = (givenValue, acceptedValue) => {
+    if(!givenValue || !acceptedValue) return false;
+    if(givenValue === acceptedValue) return true;
+    if(hasNegation(givenValue) !== hasNegation(acceptedValue)) return false;
+    return phraseContained(acceptedValue, givenValue);
   };
   const concepts=[];
   accepted.forEach(a=>{
-    const existing=concepts.find(group=>group.some(v=>phraseMatch(a,v)));
+    const existing=concepts.find(group=>group.some(v=>conceptMatch(a,v)));
     if(existing) existing.push(a); else concepts.push([a]);
   });
   const usedGiven=new Set();
@@ -1723,7 +1730,7 @@ function countMatchesFlexible(givenList, answerList){
   concepts.forEach(group=>{
     for(let i=0;i<given.length;i++){
       if(usedGiven.has(i)) continue;
-      if(group.some(a=>phraseMatch(given[i],a))){
+      if(group.some(a=>answerMatch(given[i],a))){
         usedGiven.add(i);
         matches++;
         break;
