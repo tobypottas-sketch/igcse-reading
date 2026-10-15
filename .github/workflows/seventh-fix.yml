@@ -22,7 +22,7 @@ jobs:
           p = Path('index.html')
           s = p.read_text()
           start = s.index('function countMatchesFlexible(')
-          end = s.index('\nfunction isCorrect(', start)
+          end = s.index('\nfunction getTripleAnswer(', start)
           new = '''function countMatchesFlexible(givenList, answerList){
             const given = givenList.map(normalizeAnswerText).filter(Boolean);
             const accepted = answerList.map(normalizeAnswerText).filter(Boolean);
