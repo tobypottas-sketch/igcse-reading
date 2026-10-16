@@ -558,6 +558,7 @@ input:focus,textarea:focus,select:focus{border-color:var(--teal);box-shadow:0 0 
         <div class="stat-card"><div class="stat-value" id="scoreAnswered">0</div><div class="stat-label">Answered</div></div>
         <div class="stat-card"><div class="stat-value" id="scoreCorrect">0</div><div class="stat-label">Correct</div></div>
         <div class="stat-card"><div class="stat-value" id="scorePercent">0%</div><div class="stat-label">Accuracy</div></div>
+        <div class="stat-card"><div class="stat-value" id="scoreGrade">—</div><div class="stat-label">Estimated 0511 R&W grade</div><div class="stat-label" style="margin-top:6px">June 2026 · Component 12 · practice estimate, not an official Cambridge result</div></div>
         <div class="stat-card"><div class="stat-value" id="scorePaper">1</div><div class="stat-label">Current paper</div></div>
       </div>
 
@@ -1381,12 +1382,21 @@ function isCorrect(q, given){
   const clean = normalizeAnswerText(given);
   return countMatchesFlexible([clean], q.answers || []) >= 1;
 }
+function estimate0511Component12Grade(percent){
+  const thresholds=[55,50,45,40,35,30,25];
+  const grades=['A','B','C','D','E','F','G'];
+  const raw=(Number(percent)||0)*60/100;
+  for(let i=0;i<thresholds.length;i++){ if(raw>=thresholds[i]) return grades[i]; }
+  return 'U';
+}
+
 function renderResults(){
   const p = activePaper();
   if(!canViewFeedback()){
     document.getElementById('scoreAnswered').textContent = '—';
     document.getElementById('scoreCorrect').textContent = '—';
     document.getElementById('scorePercent').textContent = '—';
+    document.getElementById('scoreGrade').textContent = '—';
     document.getElementById('scorePaper').textContent = PAPERS.findIndex(x=>x.id===p.id)+1;
     document.getElementById('progressFill').style.width = '0%';
     renderChecklist('strengthList', ['Submit the paper to unlock exam feedback.'], 'ok');
@@ -1436,6 +1446,8 @@ function renderResults(){
   document.getElementById('scoreAnswered').textContent = answered;
   document.getElementById('scoreCorrect').textContent = correct;
   document.getElementById('scorePercent').textContent = percent + '%';
+  const gradeComplete = total>0 && answered >= total;
+  document.getElementById('scoreGrade').textContent = gradeComplete ? estimate0511Component12Grade(percent) : '—';
   document.getElementById('scorePaper').textContent = PAPERS.findIndex(x=>x.id===p.id)+1;
   document.getElementById('progressFill').style.width = (answered/total*100) + '%';
 
