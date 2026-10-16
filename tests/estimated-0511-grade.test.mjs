@@ -12,3 +12,5 @@ test('Reading Results shows a June 2026 0511 Component 12 grade only after compl
   assert.match(html, /June 2026/);
   assert.match(html, /not an official Cambridge result/i);
 });
+
+// Regression guard for the student-facing grade result.
