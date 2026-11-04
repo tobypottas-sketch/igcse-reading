@@ -24,3 +24,39 @@ body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSyst
 .tab-btn:focus-visible, .btn:focus-visible, .hub-return-link:focus-visible { outline: 3px solid #2e73d6; outline-offset: 3px; }
 @media(max-width:700px) { .tab-btn { padding: 10px 12px; } }
 @media(prefers-reduced-motion:reduce) { .tab-btn, .btn { transition: none; } }
+
+/* Reading exercise selector: stays within Paper Practice as students read.
+   The mode switcher, page tabs and paper controls are deliberately not sticky. */
+#panel-paper .exercise-nav {
+  position: sticky;
+  top: 8px;
+  z-index: 30;
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  gap: 8px;
+  padding: 9px 10px;
+  margin: -9px -10px 12px;
+  background: rgba(255, 255, 255, .97);
+  border: 1px solid var(--suite-border);
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(23, 56, 82, .08);
+}
+#panel-paper .exercise-btn {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+#panel-paper .exercise-btn:focus-visible {
+  outline: 3px solid #2e73d6;
+  outline-offset: 2px;
+}
+@media(max-width:700px) {
+  #panel-paper .exercise-nav {
+    top: 0;
+    padding: 8px;
+    margin: -8px -8px 12px;
+    border-radius: 12px;
+  }
+}
