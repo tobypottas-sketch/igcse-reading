@@ -200,6 +200,20 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--sage);bo
   .card{padding:16px}
 }
 
+/* Keep the overview paper chooser compact on wide screens. */
+.paper-picker-controls{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  max-width:760px;
+}
+.paper-picker-controls #paperSelect{
+  flex:1 1 420px;min-width:0;max-width:620px;
+}
+.paper-picker-controls .btn{flex:0 0 auto;white-space:nowrap}
+@media(max-width:600px){
+  .paper-picker-controls #paperSelect{flex-basis:100%;max-width:none}
+  .paper-picker-controls .btn{width:100%}
+}
+
 /* ==========================================================
    CROSS-DEVICE / GITHUB PAGES SAFETY PATCH
    Keeps the existing design and behaviour intact.
@@ -482,8 +496,8 @@ input:focus,textarea:focus,select:focus{border-color:var(--teal);box-shadow:0 0 
       <div class="card-header">Choose a paper</div>
       <div class="form-row">
         <label>Practice paper</label>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-          <select id="paperSelect" style="flex:1;min-width:260px"></select>
+        <div class="paper-picker-controls">
+          <select id="paperSelect"></select>
           <button class="btn btn-primary" onclick="loadSelectedPaper()">Load paper</button>
         </div>
       </div>
